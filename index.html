@@ -451,6 +451,7 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
   <div class="navtab" onclick="switchPage('viz')" id="tab-viz">🖼️ VISUALIZATION</div>
   <div class="navtab" onclick="switchPage('dashboard')" id="tab-dashboard">📊 DASHBOARD</div>
   <div class="navtab" onclick="switchPage('ideas')" id="tab-ideas">💡 AI IDEAS <span id="ideasBadge" style="display:none;font-size:8px;padding:1px 5px;background:rgba(200,61,255,0.2);border:1px solid rgba(200,61,255,0.4);color:var(--neon4);margin-left:2px;">0</span></div>
+  <div class="navtab" onclick="switchPage('coding')" id="tab-coding">💻 CODING</div>
 </nav>
 
 <div class="app-body">
@@ -551,7 +552,6 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
 
     <!-- IDEAS PAGE -->
     <div class="page" id="page-ideas">
-      <div class="ideas-page" id="ideasContent">
         <div class="ideas-header">
           <div>
             <div style="font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--neon4);text-shadow:0 0 12px rgba(200,61,255,0.5);">💡 AI-GENERATED IDEAS</div>
@@ -564,6 +564,20 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
           </div>
         </div>
         <div id="ideasList"><div class="ideas-empty">💡 NO IDEAS YET<br><br>As you chat with the AI, it will automatically<br>detect and list new invention ideas and upgrades here.</div></div>
+      </div>
+    </div>
+
+    <!-- CODING PAGE -->
+    <div class="page" id="page-coding">
+      <div class="bp-page" id="codingContent">
+        <div class="bp-empty">💻 NO CODE YET<br><br>Click GENERATE CODE or ask the AI in the Chat page<br>to write code for your invention.</div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border2);background:linear-gradient(135deg,var(--metal1),var(--metal2));display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;">
+        <button class="tbtn active-btn" onclick="generateCode()">💻 GENERATE CODE</button>
+        <button class="tbtn" onclick="switchPage('chat');setTimeout(()=>askFollowup('Generate the complete code for this invention including all modules, functions and implementation'),100)">⚡ FULL CODE</button>
+        <button class="tbtn" onclick="switchPage('chat');setTimeout(()=>askFollowup('Generate the API structure and endpoints for this invention'),100)">🔌 API STRUCTURE</button>
+        <button class="tbtn" onclick="switchPage('chat');setTimeout(()=>askFollowup('Generate the database schema for this invention'),100)">🗄️ DATABASE</button>
+        <button class="tbtn" onclick="copyCode()">📋 COPY ALL CODE</button>
       </div>
     </div>
 
@@ -618,7 +632,7 @@ function saveInventions(){localStorage.setItem('inventai_inventions',JSON.string
 window.onload=()=>{if(apiKey)document.getElementById('apiNotice').classList.add('hidden');renderInvList();renderDashboard();renderIdeas();updateIdeasBadge();if(inventions.length>0)selectInvention(inventions[0].id);};
 function saveApiKey(){const v=document.getElementById('apiKeyInput').value.trim();if(v.startsWith('sk-')){apiKey=v;localStorage.setItem('inventai_key',apiKey);document.getElementById('apiNotice').classList.add('hidden');addSystemMsg('✅ API key saved. INVENTAI is now fully operational.');}else alert('Please enter a valid Anthropic API key (starts with sk-ant-)');}
 function changeApiKey(){apiKey='';localStorage.removeItem('inventai_key');document.getElementById('apiNotice').classList.remove('hidden');document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyInput').focus();}function setStatus(thinking){isThinking=thinking;const dot=document.getElementById('statusDot'),txt=document.getElementById('statusText'),btn=document.getElementById('sendBtn');if(thinking){dot.className='status-dot thinking';txt.className='status-text thinking';txt.textContent='OPUS 4.6 · THINKING...';btn.disabled=true;}else{dot.className='status-dot online';txt.className='status-text online';txt.textContent='OPUS 4.6 · READY';btn.disabled=false;}}
-function switchPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');document.getElementById('tab-'+n).classList.add('active');if(n==='dashboard')renderDashboard();if(n==='ideas')renderIdeas();}
+function switchPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');document.getElementById('tab-'+n).classList.add('active');if(n==='dashboard')renderDashboard();if(n==='ideas')renderIdeas();if(n==='coding'){const inv=getCurrentInv();if(inv)renderCoding(inv);}}
 function openModal(){document.getElementById('newModal').classList.remove('hidden');document.getElementById('newInvName').focus();}
 function closeModal(){document.getElementById('newModal').classList.add('hidden');document.getElementById('newInvName').value='';document.getElementById('newInvGoal').value='';}
 function createInvention(){const name=document.getElementById('newInvName').value.trim(),cat=document.getElementById('newInvCat').value,goal=document.getElementById('newInvGoal').value.trim();if(!name){alert('Please enter an invention name.');return;}const inv={id:Date.now().toString(),name,cat,goal,created:new Date().toLocaleDateString(),version:1,messages:[],blueprint:null,manual:null,visualization:null,scores:{feasibility:0,market:0,novelty:0,cost:0},patent:0,patentNote:'Analysis pending...',marketVal:'—',marketTags:[],problems:[],keywords:[],versions:[{v:1,desc:'Initial concept'}]};inventions.unshift(inv);saveInventions();closeModal();renderInvList();selectInvention(inv.id);if(goal)setTimeout(()=>{document.getElementById('mainInput').value=goal;sendMessage();},300);}
@@ -632,7 +646,7 @@ function closeConfirm(){document.getElementById('confirmModal').classList.add('h
 function confirmDeleteInvention(id){const inv=inventions.find(i=>i.id===id);if(!inv)return;showConfirm(`Delete "${inv.name}"? This cannot be undone.`,()=>{inventions=inventions.filter(i=>i.id!==id);saveInventions();if(currentInvId===id){currentInvId=null;document.getElementById('currentInvTitle').textContent='SELECT OR CREATE AN INVENTION';document.getElementById('messages').innerHTML='';if(inventions.length>0)selectInvention(inventions[0].id);}renderInvList();renderDashboard();});}
 
 function deleteMessage(msgId){const inv=getCurrentInv();if(!inv)return;showConfirm('Delete this message? This cannot be undone.',()=>{inv.messages=inv.messages.filter(m=>m.id!==msgId);saveInventions();const el=document.getElementById(msgId);if(el)el.remove();});}
-function selectInvention(id){currentInvId=id;renderInvList();const inv=getCurrentInv();if(!inv)return;document.getElementById('currentInvTitle').textContent=inv.name;document.getElementById('currentVerTag').textContent='v'+inv.version;renderMessages(inv);renderBlueprint(inv);renderManual(inv);renderVisualization(inv);updateRightPanel(inv);}
+function selectInvention(id){currentInvId=id;renderInvList();const inv=getCurrentInv();if(!inv)return;document.getElementById('currentInvTitle').textContent=inv.name;document.getElementById('currentVerTag').textContent='v'+inv.version;renderMessages(inv);renderBlueprint(inv);renderManual(inv);renderVisualization(inv);renderCoding(inv);updateRightPanel(inv);}
 function renderMessages(inv){const c=document.getElementById('messages');if(!inv.messages.length){c.innerHTML=`<div class="msg"><div class="msg-av system">⬡</div><div class="msg-body"><div class="msg-meta system">INVENTAI SYSTEM</div><div class="msg-bubble system">Invention <span class="hl">"${inv.name}"</span> created in <span class="hl3">${inv.cat}</span>.<br><br>Describe your concept, paste URLs, or click <span class="hl2">AUTO-INVENT</span> to generate ideas automatically.</div></div></div>`;}else{c.innerHTML=inv.messages.map(m=>renderMsgHTML(m)).join('');}scrollToBottom();}
 function renderMsgHTML(m){
   const ac=m.role==='ai'?'ai':m.role==='system'?'system':'user';
@@ -688,7 +702,62 @@ function attachImage(){alert('Describe your image in the text box for AI analysi
 function attachData(){const d=prompt('Paste raw data or technical notes:');if(d)document.getElementById('mainInput').value=`Analyze this technical data and extract insights for my invention: ${d}`;}
 function toggleMic(){const btn=document.getElementById('micBtn');if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){alert('Voice input requires Chrome browser.');return;}if(isRecording){recognition.stop();isRecording=false;btn.classList.remove('recording');return;}const SR=window.SpeechRecognition||window.webkitSpeechRecognition;recognition=new SR();recognition.continuous=false;recognition.interimResults=false;recognition.lang='en-US';recognition.onresult=e=>{document.getElementById('mainInput').value=e.results[0][0].transcript;isRecording=false;btn.classList.remove('recording');};recognition.onerror=recognition.onend=()=>{isRecording=false;btn.classList.remove('recording');};recognition.start();isRecording=true;btn.classList.add('recording');}
 function renderDashboard(){const total=inventions.length,af=total>0?Math.round(inventions.reduce((s,i)=>s+(i.scores.feasibility||0),0)/total):0,ap=total>0?Math.round(inventions.reduce((s,i)=>s+(i.patent||0),0)/total):0,tv=inventions.reduce((s,i)=>s+(i.version||1),0);document.getElementById('dmTotal').textContent=total;document.getElementById('dmAvgFeas').textContent=af>0?af+'%':'—';document.getElementById('dmPatent').textContent=ap>0?ap+'%':'—';document.getElementById('dmVersions').textContent=tv;const grid=document.getElementById('dashInvGrid');if(!inventions.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text3);font-family:\'Chakra Petch\',sans-serif;font-size:11px;letter-spacing:3px;line-height:2.2;">NO INVENTIONS YET<br>CREATE YOUR FIRST ONE</div>';return;}grid.innerHTML=inventions.map(inv=>{const f=inv.scores.feasibility,fc=f>=75?'var(--neon3)':f>=50?'var(--gold)':'var(--neon2)';return`<div class="dash-inv-card" onclick="selectInvention('${inv.id}');switchPage('chat');"><div class="dash-inv-card-cat">${inv.cat}</div><div class="dash-inv-card-name">${inv.name}</div><div class="dash-progress"><div class="dash-progress-fill" style="width:${f||0}%;background:${fc};box-shadow:0 0 8px ${fc};"></div></div><div class="dash-score-row"><span class="dash-score-label">FEASIBILITY</span><span class="dash-score-val" style="color:${fc};text-shadow:0 0 8px ${fc};">${f||'—'}${f?'%':''}</span></div><div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;"><span style="font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 6px;border:1px solid rgba(200,61,255,0.3);color:var(--neon4);">v${inv.version}</span><span style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text3);">${inv.created}</span>${inv.patent>0?`<span style="font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 6px;border:1px solid rgba(57,255,133,0.3);color:var(--neon3);">PAT ${inv.patent}%</span>`:''}</div></div>`;}).join('');}
-function exportPDF(){const inv=getCurrentInv();if(!inv){alert('Please select an invention first.');return;}const c=`INVENTAI — INVENTION REPORT\n${'═'.repeat(50)}\nName: ${inv.name}\nCategory: ${inv.cat}\nVersion: v${inv.version}\nDate: ${inv.created}\nPatent: ${inv.patent}%\nFeasibility: ${inv.scores.feasibility}%\nMarket: ${inv.scores.market}%\nNovelty: ${inv.scores.novelty}%\nMarket Size: ${inv.marketVal}\n\nBLUEPRINT:\n${inv.blueprint||'Not generated'}\n\nMANUAL:\n${inv.manual||'Not generated'}\n\nCONVERSATION:\n${inv.messages.map(m=>`[${m.role.toUpperCase()}] ${m.content.replace(/<[^>]+>/g,'')}`).join('\n\n')}`;const b=new Blob([c],{type:'text/plain'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`INVENTAI_${inv.name.replace(/\s+/g,'_')}_v${inv.version}.txt`;a.click();addSystemMsg(`✅ Report exported: ${inv.name} v${inv.version}`);}
+function exportPDF(){const inv=getCurrentInv();if(!inv){alert('Please select an invention first.');return;}const c=`INVENTAI — INVENTION REPORT\n${'═'.repeat(50)}\nName: ${inv.name}\nCategory: ${inv.cat}\nVersion: v${inv.version}\nDate: ${inv.created}\nPatent: ${inv.patent}%\nFeasibility: ${inv.scores.feasibility}%\nMarket: ${inv.scores.market}%\nNovelty: ${inv.scores.novelty}%\nMarket Size: ${inv.marketVal}\n\nBLUEPRINT:\n${inv.blueprint||'Not generated'}\n\nMANUAL:\n${inv.manual||'Not generated'}\n\nCODE:\n${inv.code||'Not generated'}\n\nCONVERSATION:\n${inv.messages.map(m=>`[${m.role.toUpperCase()}] ${m.content.replace(/<[^>]+>/g,'')}`).join('\n\n')}`;const b=new Blob([c],{type:'text/plain'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`INVENTAI_${inv.name.replace(/\s+/g,'_')}_v${inv.version}.txt`;a.click();addSystemMsg(`✅ Report exported: ${inv.name} v${inv.version}`);}
+
+// CODING PAGE
+async function generateCode(){
+  if(!apiKey){addMsg('ai','⚠️ Please enter your API key first.');return;}
+  const inv=getCurrentInv();
+  if(!inv){alert('Please select an invention first.');return;}
+  const isSoftware=inv.cat.includes('SOFTWARE')||inv.cat.includes('PCB')||inv.cat.includes('ROBOTICS');
+  const p=`Generate complete, working code for the invention "${inv.name}" (${inv.cat}).
+${isSoftware?'This is a software/firmware invention — write full implementation code.':'This is a physical/hardware invention — write the firmware, control software, and any embedded code needed.'}
+Include:
+1. Main application code with all core functions
+2. Key algorithms that make this invention work
+3. Data structures and models
+4. API or interface code if applicable
+5. Configuration and setup code
+6. Comments explaining each major section
+Make the code production-ready, well-structured and properly commented.`;
+  setStatus(true);
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:2000,messages:[{role:'user',content:p}]})});
+    const d=await r.json();setStatus(false);
+    if(d.error){addSystemMsg(`⚠️ Code generation error: ${d.error.message}`);return;}
+    if(d.content&&d.content[0]){
+      inv.code=d.content[0].text;
+      inv.version+=1;
+      inv.versions.push({v:inv.version,desc:'Code generated'});
+      saveInventions();renderCoding(inv);updateRightPanel(inv);renderInvList();
+      document.getElementById('currentVerTag').textContent='v'+inv.version;
+      addSystemMsg(`✅ Code generated for ${inv.name}! Check the CODING tab.`);
+      switchPage('coding');
+    }
+  }catch(e){setStatus(false);addSystemMsg(`⚠️ Code error: ${e.message}`);}
+}
+
+function renderCoding(inv){
+  const el=document.getElementById('codingContent');
+  if(!inv||!inv.code){
+    el.innerHTML='<div class="bp-empty">💻 NO CODE YET<br><br>Click GENERATE CODE or ask the AI in the Chat page<br>to write code for your invention.</div>';
+    return;
+  }
+  const formatted=inv.code
+    .replace(/```(\w+)?([\s\S]*?)```/g,'<div class="bp-diagram" style="color:var(--neon);font-size:11px;">$2</div>')
+    .replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>')
+    .replace(/\n/g,'<br>');
+  el.innerHTML=`<div class="bp-section">
+    <div class="bp-section-title">💻 CODE — ${inv.name.toUpperCase()}</div>
+    <div class="bp-content">${formatted}</div>
+  </div>`;
+}
+
+function copyCode(){
+  const inv=getCurrentInv();
+  if(!inv||!inv.code){alert('No code generated yet.');return;}
+  navigator.clipboard.writeText(inv.code).then(()=>{addSystemMsg('✅ Code copied to clipboard!');});
+}
 </script>
 </body>
 </html>
