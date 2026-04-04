@@ -593,6 +593,7 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
           <span id="researchStatus" style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);"></span>
           <button class="tbtn active-btn" onclick="runResearch()">🔄 REFRESH RESEARCH</button>
           <button class="tbtn" onclick="runResearchAll()">⚡ RESEARCH ALL INVENTIONS</button>
+          <button class="tbtn" style="border-color:rgba(57,255,133,0.5);color:var(--neon3);background:rgba(57,255,133,0.08);" onclick="implementResearch()">🚀 IMPLEMENT RESEARCH</button>
         </div>
       </div>
       <div style="flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:16px;" id="researchContent">
@@ -795,7 +796,7 @@ function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMe
 async function sendMessage(){const input=document.getElementById('mainInput'),text=input.value.trim();if(!text||isThinking)return;if(!currentInvId){alert('Please create or select an invention first.');return;}input.value='';addMsg('user',text);await callAI(text);}
 async function callAI(userMessage,systemOverride=null){if(!apiKey){addMsg('ai','⚠️ Please enter your Anthropic API key above to activate the AI.');return;}const inv=getCurrentInv();if(!inv)return;setStatus(true);addThinking();const history=inv.messages.slice(-12).filter(m=>m.role!=='system').map(m=>({role:m.role==='ai'?'assistant':'user',content:m.content.replace(/<[^>]+>/g,'')}));const sys=systemOverride||`You are INVENTAI, a world-class invention intelligence assistant powered by Claude Opus 4.6. Current invention: "${inv.name}" | Category: ${inv.cat} | Goal: ${inv.goal||'Not specified'} | Version: v${inv.version}. Be specific, technical, proactive. Always look for related invention opportunities the user has NOT thought of yet. After your response, ALWAYS end with this exact JSON:
 INVENTAI_DATA:{"feasibility":85,"market":90,"novelty":78,"cost":65,"patent":82,"patentNote":"Brief status","marketVal":"$2.3B","marketTags":["TAG1","TAG2","TAG3"],"problems":["Problem 1","Problem 2"],"keywords":["kw1","kw2","kw3","kw4"],"versionBump":false,"versionDesc":"","suggestedIdeas":[{"type":"new","name":"Invention Name","desc":"Brief description of this new invention idea you spotted","cat":"⚙️ MECHANICAL"},{"type":"upgrade","name":"Upgrade Name","desc":"Brief description of this upgrade or improvement idea","cat":"🔌 PCB / ELECTRONICS"}]}`;
-try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:2000,system:sys,messages:[...history.slice(0,-1),{role:'user',content:userMessage}]})});const d=await r.json();removeThinking();if(d.error){addMsg('ai',`⚠️ API Error: ${d.error.type} — ${d.error.message}`);setStatus(false);return;}if(!d.content||!d.content[0]){addMsg('ai','⚠️ Empty response from AI. Please try again.');setStatus(false);return;}let ft=d.content[0].text,dt=ft,jd=null;const ji=ft.indexOf('INVENTAI_DATA:');if(ji!==-1){dt=ft.substring(0,ji).trim();try{jd=JSON.parse(ft.substring(ji+14).trim());}catch(e){}}dt=dt.replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>').replace(/`(.*?)`/g,'<span class="hl3">$1</span>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');const chips=`<div class="chips"><div class="chip" onclick="askFollowup('Generate the full blueprint for this invention')">→ BLUEPRINT</div><div class="chip" onclick="askFollowup('Write the complete step-by-step manual')">→ MANUAL</div><div class="chip" onclick="askFollowup('Run a prior art and patent search')">→ PRIOR ART</div><div class="chip" onclick="askFollowup('Identify all potential problems and solutions')">→ PROBLEMS</div><div class="chip" onclick="askFollowup('Full market analysis and competitor landscape')">→ MARKET</div></div>`;addMsg('ai',dt+chips);if(jd)updateScores(jd);setStatus(false);}catch(err){removeThinking();addMsg('ai',`⚠️ Connection error: ${err.message}. Check your API key and internet connection.`);setStatus(false);}}
+try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4000,system:sys,messages:[...history.slice(0,-1),{role:'user',content:userMessage}]})});const d=await r.json();removeThinking();if(d.error){addMsg('ai',`⚠️ API Error: ${d.error.type} — ${d.error.message}`);setStatus(false);return;}if(!d.content||!d.content[0]){addMsg('ai','⚠️ Empty response from AI. Please try again.');setStatus(false);return;}let ft=d.content[0].text,dt=ft,jd=null;const ji=ft.indexOf('INVENTAI_DATA:');if(ji!==-1){dt=ft.substring(0,ji).trim();try{jd=JSON.parse(ft.substring(ji+14).trim());}catch(e){}}dt=dt.replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>').replace(/`(.*?)`/g,'<span class="hl3">$1</span>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');const chips=`<div class="chips"><div class="chip" onclick="askFollowup('Generate the full blueprint for this invention')">→ BLUEPRINT</div><div class="chip" onclick="askFollowup('Write the complete step-by-step manual')">→ MANUAL</div><div class="chip" onclick="askFollowup('Run a prior art and patent search')">→ PRIOR ART</div><div class="chip" onclick="askFollowup('Identify all potential problems and solutions')">→ PROBLEMS</div><div class="chip" onclick="askFollowup('Full market analysis and competitor landscape')">→ MARKET</div></div>`;addMsg('ai',dt+chips);if(jd)updateScores(jd);setStatus(false);}catch(err){removeThinking();addMsg('ai',`⚠️ Connection error: ${err.message}. Check your API key and internet connection.`);setStatus(false);}}
 function askFollowup(t){document.getElementById('mainInput').value=t;sendMessage();}
 
 // COPY & NEW CHAT
@@ -815,11 +816,11 @@ function askAboutIdea(name,desc){const q=`Tell me more about this idea: "${decod
 
 function updateScores(data){const inv=getCurrentInv();if(!inv)return;if(data.feasibility)inv.scores.feasibility=data.feasibility;if(data.market)inv.scores.market=data.market;if(data.novelty)inv.scores.novelty=data.novelty;if(data.cost)inv.scores.cost=data.cost;if(data.patent)inv.patent=data.patent;if(data.patentNote)inv.patentNote=data.patentNote;if(data.marketVal)inv.marketVal=data.marketVal;if(data.marketTags)inv.marketTags=data.marketTags;if(data.problems)inv.problems=data.problems;if(data.keywords)inv.keywords=data.keywords;if(data.versionBump){inv.version+=1;inv.versions.push({v:inv.version,desc:data.versionDesc||'Updated'});document.getElementById('currentVerTag').textContent='v'+inv.version;}if(data.suggestedIdeas&&data.suggestedIdeas.length)addIdeas(data.suggestedIdeas);saveInventions();updateRightPanel(inv);renderInvList();}
 function updateRightPanel(inv){const ss=(id,bid,val)=>{document.getElementById(bid).style.width=val+'%';document.getElementById(id).textContent=val>0?val+'%':'—';};ss('sn-feas','sf-feas',inv.scores.feasibility);ss('sn-mkt','sf-mkt',inv.scores.market);ss('sn-nov','sf-nov',inv.scores.novelty);ss('sn-cost','sf-cost',inv.scores.cost);const p=inv.patent;document.getElementById('patentRing').style.strokeDashoffset=144.5-(144.5*p/100);document.getElementById('patentPct').textContent=p>0?p+'%':'—';document.getElementById('patentNote').textContent=inv.patentNote||'Waiting...';document.getElementById('mktVal').textContent=inv.marketVal||'—';const tc=['tag-c','tag-p','tag-g','tag-o'];document.getElementById('mktTags').innerHTML=(inv.marketTags||[]).map((t,i)=>`<span class="tag ${tc[i%4]}">${t}</span>`).join('');const dc=['var(--gold)','var(--neon4)','var(--neon)','var(--neon2)'];document.getElementById('problemsList').innerHTML=inv.problems&&inv.problems.length?inv.problems.map((p,i)=>`<div class="prob-item"><div class="prob-dot" style="background:${dc[i%4]};box-shadow:0 0 7px ${dc[i%4]};"></div><div class="prob-text">${p}</div></div>`).join(''):'<div style="font-size:11px;color:var(--text3);">No issues detected yet.</div>';document.getElementById('verList').innerHTML=inv.versions&&inv.versions.length?[...inv.versions].reverse().map((v,i)=>`<div class="ver-item"><span class="ver-tag2 ${i===0?'cur':'old'}">v${v.v}</span><span class="ver-desc ${i===0?'':'old'}">${v.desc}</span></div>`).join(''):'<div style="font-size:11px;color:var(--text3);">No versions yet.</div>';const kc=['tag-c','tag-p','tag-g','tag-o','tag-c','tag-g'];document.getElementById('keywordTags').innerHTML=inv.keywords&&inv.keywords.length?inv.keywords.map((k,i)=>`<span class="tag ${kc[i%6]}">${k.toUpperCase()}</span>`).join(''):'<div style="font-size:11px;color:var(--text3);">Generated after analysis.</div>';}
-async function generateBlueprint(inv){const p=`Generate a comprehensive technical blueprint for "${inv.name}" (${inv.cat}). Include: 1) Overview 2) Technical Specifications 3) Components List 4) System Architecture 5) ASCII diagram 6) Manufacturing notes.`;setStatus(true);try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:2000,messages:[{role:'user',content:p}]})});const d=await r.json();setStatus(false);if(d.error){addSystemMsg(`⚠️ Blueprint error: ${d.error.message}`);return;}if(d.content&&d.content[0]){inv.blueprint=d.content[0].text;saveInventions();renderBlueprint(inv);}}catch(e){setStatus(false);addSystemMsg(`⚠️ Error: ${e.message}`);}}
+async function generateBlueprint(inv){const p=`Generate a comprehensive technical blueprint for "${inv.name}" (${inv.cat}). Include: 1) Overview 2) Technical Specifications 3) Components List 4) System Architecture 5) ASCII diagram 6) Manufacturing notes.`;setStatus(true);try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:8000,messages:[{role:'user',content:p}]})});const d=await r.json();setStatus(false);if(d.error){addSystemMsg(`⚠️ Blueprint error: ${d.error.message}`);return;}if(d.content&&d.content[0]){inv.blueprint=d.content[0].text;saveInventions();renderBlueprint(inv);}}catch(e){setStatus(false);addSystemMsg(`⚠️ Error: ${e.message}`);}}
 function renderBlueprint(inv){const el=document.getElementById('blueprintContent');if(!inv||!inv.blueprint){el.innerHTML='<div class="bp-empty">📐 NO BLUEPRINT YET<br><br>Click GENERATE ALL or ask the AI to create a blueprint.</div>';return;}el.innerHTML=`<div class="bp-section"><div class="bp-section-title">📐 BLUEPRINT — ${inv.name.toUpperCase()}</div><div class="bp-content">${inv.blueprint.replace(/```([\s\S]*?)```/g,'<div class="bp-diagram">$1</div>').replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>')}</div></div>`;}
-async function generateManual(inv){const p=`Write a complete step-by-step manual for "${inv.name}" (${inv.cat}). Include: 1) Materials & Tools 2) Safety 3) Step-by-Step Build 4) Testing 5) Troubleshooting 6) Invention story.`;setStatus(true);try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:2000,messages:[{role:'user',content:p}]})});const d=await r.json();setStatus(false);if(d.error){addSystemMsg(`⚠️ Manual error: ${d.error.message}`);return;}if(d.content&&d.content[0]){inv.manual=d.content[0].text;saveInventions();renderManual(inv);}}catch(e){setStatus(false);addSystemMsg(`⚠️ Error: ${e.message}`);}}
+async function generateManual(inv){const p=`Write a complete step-by-step manual for "${inv.name}" (${inv.cat}). Include: 1) Materials & Tools 2) Safety 3) Step-by-Step Build 4) Testing 5) Troubleshooting 6) Invention story.`;setStatus(true);try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:8000,messages:[{role:'user',content:p}]})});const d=await r.json();setStatus(false);if(d.error){addSystemMsg(`⚠️ Manual error: ${d.error.message}`);return;}if(d.content&&d.content[0]){inv.manual=d.content[0].text;saveInventions();renderManual(inv);}}catch(e){setStatus(false);addSystemMsg(`⚠️ Error: ${e.message}`);}}
 function renderManual(inv){const el=document.getElementById('manualContent');if(!inv||!inv.manual){el.innerHTML='<div class="bp-empty">📖 NO MANUAL YET<br><br>Click GENERATE ALL or ask the AI to write a manual.</div>';return;}const steps=inv.manual.split(/(?=\n\d+\.|(?=\n#{1,2} ))/);let html='',n=0;steps.forEach(s=>{if(!s.trim())return;const lines=s.trim().split('\n'),title=lines[0].replace(/^[\d\.#\s]+/,'').toUpperCase(),content=lines.slice(1).join('\n').replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>').replace(/\n/g,'<br>');n++;html+=`<div class="manual-section"><div class="step-num">0${n}</div><div class="step-title">${title}</div><div class="step-content">${content}</div></div>`;});el.innerHTML=html||`<div class="manual-section"><div class="step-content">${inv.manual.replace(/\n/g,'<br>')}</div></div>`;}
-async function generateVisualization(inv){const p=`For "${inv.name}" (${inv.cat}): 1) Create large ASCII art technical drawing with labels. 2) List top 5 components.\nFormat:\nASCII_DRAWING:\n[art]\nCOMPONENTS:\n[list]`;setStatus(true);try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:1500,messages:[{role:'user',content:p}]})});const d=await r.json();setStatus(false);if(d.error){addSystemMsg(`⚠️ Visualization error: ${d.error.message}`);return;}if(d.content&&d.content[0]){inv.visualization=d.content[0].text;saveInventions();renderVisualization(inv);}}catch(e){setStatus(false);addSystemMsg(`⚠️ Error: ${e.message}`);}}
+async function generateVisualization(inv){const p=`For "${inv.name}" (${inv.cat}): 1) Create large ASCII art technical drawing with labels. 2) List top 5 components.\nFormat:\nASCII_DRAWING:\n[art]\nCOMPONENTS:\n[list]`;setStatus(true);try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:8000,messages:[{role:'user',content:p}]})});const d=await r.json();setStatus(false);if(d.error){addSystemMsg(`⚠️ Visualization error: ${d.error.message}`);return;}if(d.content&&d.content[0]){inv.visualization=d.content[0].text;saveInventions();renderVisualization(inv);}}catch(e){setStatus(false);addSystemMsg(`⚠️ Error: ${e.message}`);}}
 function renderVisualization(inv){const el=document.getElementById('vizContent');if(!inv||!inv.visualization){el.innerHTML=`<div class="viz-panel full"><div class="viz-title">INVENTION VISUALIZATION</div><div class="viz-placeholder"><div style="font-size:42px;opacity:0.15;">🖼️</div><div class="viz-placeholder-text">NO VISUALIZATION YET<br>GENERATE FROM CHAT PAGE</div></div></div>`;return;}const text=inv.visualization,am=text.match(/ASCII_DRAWING:([\s\S]*?)(?=COMPONENTS:|$)/i),cm=text.match(/COMPONENTS:([\s\S]*?)$/i),ascii=am?am[1].trim():text,comps=cm?cm[1].trim():'';el.innerHTML=`<div class="viz-panel full"><div class="viz-title">TECHNICAL DRAWING — ${inv.name.toUpperCase()}</div><div class="bp-diagram" style="font-size:10px;line-height:1.4;">${ascii.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div><div class="viz-panel full"><div class="viz-title">COMPONENT BREAKDOWN</div><div style="font-size:13px;line-height:1.8;white-space:pre-line;">${comps.replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>')}</div></div>`;}
 async function generateAll(){if(!apiKey){addMsg('ai','⚠️ Please enter your API key first.');return;}const inv=getCurrentInv();if(!inv){alert('Please select an invention first.');return;}addSystemMsg('⚡ Generating full analysis, blueprint, manual and visualization...');await callAI('Provide a comprehensive technical analysis. Cover feasibility, novelty, market potential, and technical challenges in detail.');await generateBlueprint(inv);await generateManual(inv);await generateVisualization(inv);inv.version+=1;inv.versions.push({v:inv.version,desc:'Full generation complete'});saveInventions();updateRightPanel(inv);renderInvList();document.getElementById('currentVerTag').textContent='v'+inv.version;addSystemMsg(`✅ Complete! Blueprint, manual and visualization ready. Updated to v${inv.version}.`);}
 function runPriorArt(){askFollowup('Run a comprehensive prior art search. Check existing patents, similar products, competing technologies. What exists and how is my invention different and novel?');}
@@ -875,7 +876,7 @@ For each category provide at minimum 3-5 specific findings with as much detail a
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({
         model:'claude-opus-4-6',
-        max_tokens:3000,
+        max_tokens:8000,
         tools:[{"type":"web_search_20250305","name":"web_search"}],
         messages:[{role:'user',content:prompt}]
       })
@@ -947,6 +948,67 @@ function renderResearch(inv){
   el.innerHTML=`<div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px;">LAST UPDATED: ${inv.research.timestamp} · INVENTION: ${inv.name}</div>${html}`;
 }
 
+async function implementResearch(){
+  if(!apiKey){addSystemMsg('⚠️ Please enter your API key first.');return;}
+  const inv=getCurrentInv();
+  if(!inv){alert('Please select an invention first.');return;}
+  if(!inv.research){alert('No research found yet. Please run REFRESH RESEARCH first.');return;}
+  const statusEl=document.getElementById('researchStatus');
+  statusEl.textContent='IMPLEMENTING...';
+  statusEl.style.color='var(--gold)';
+  addSystemMsg('🚀 Implementing research findings — upgrading entire invention...');
+  switchPage('chat');
+
+  const implementPrompt=`Based on the following research findings, automatically improve and upgrade every aspect of this invention.
+
+INVENTION: "${inv.name}" (${inv.cat})
+CURRENT VERSION: v${inv.version}
+
+RESEARCH FINDINGS:
+${inv.research.text}
+
+Your task:
+1. Analyze all research findings — patents, papers, engineering research, market data and news
+2. Identify what already exists and what gaps our invention can fill
+3. Strengthen the invention to be more novel and patentable
+4. Add improvements discovered from the research
+5. Fix any weaknesses revealed by existing patents
+6. Make the invention more competitive in the market
+
+Provide a comprehensive upgrade report explaining:
+- What you found in the research that's important
+- What changes you're making to the invention and why
+- How these changes make it stronger and more patentable
+- What makes it still unique despite existing patents
+
+Be specific and technical. This upgrade should significantly improve the invention.`;
+
+  await callAI(implementPrompt);
+
+  // Now regenerate everything
+  addSystemMsg('📐 Upgrading Blueprint...');
+  await generateBlueprint(inv);
+
+  addSystemMsg('📖 Upgrading Manual...');
+  await generateManual(inv);
+
+  addSystemMsg('🖼️ Upgrading Visualization...');
+  await generateVisualization(inv);
+
+  addSystemMsg('💻 Upgrading Code...');
+  await generateCode();
+
+  inv.version+=1;
+  inv.versions.push({v:inv.version,desc:'Research implemented — full upgrade'});
+  saveInventions();
+  updateRightPanel(inv);
+  renderInvList();
+  document.getElementById('currentVerTag').textContent='v'+inv.version;
+  statusEl.textContent='IMPLEMENTED ✅';
+  statusEl.style.color='var(--neon3)';
+  addSystemMsg(`✅ Research successfully implemented! All pages upgraded to v${inv.version}. Blueprint, Manual, Visualization and Code all updated based on research findings.`);
+}
+
 function exportPDF(){const inv=getCurrentInv();if(!inv){alert('Please select an invention first.');return;}const c=`INVENTAI — INVENTION REPORT\n${'═'.repeat(50)}\nName: ${inv.name}\nCategory: ${inv.cat}\nVersion: v${inv.version}\nDate: ${inv.created}\nPatent: ${inv.patent}%\nFeasibility: ${inv.scores.feasibility}%\nMarket: ${inv.scores.market}%\nNovelty: ${inv.scores.novelty}%\nMarket Size: ${inv.marketVal}\n\nBLUEPRINT:\n${inv.blueprint||'Not generated'}\n\nMANUAL:\n${inv.manual||'Not generated'}\n\nCODE:\n${inv.code||'Not generated'}\n\nCONVERSATION:\n${inv.messages.map(m=>`[${m.role.toUpperCase()}] ${m.content.replace(/<[^>]+>/g,'')}`).join('\n\n')}`;const b=new Blob([c],{type:'text/plain'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`INVENTAI_${inv.name.replace(/\s+/g,'_')}_v${inv.version}.txt`;a.click();addSystemMsg(`✅ Report exported: ${inv.name} v${inv.version}`);}
 
 // CODING PAGE
@@ -955,19 +1017,28 @@ async function generateCode(){
   const inv=getCurrentInv();
   if(!inv){alert('Please select an invention first.');return;}
   const isSoftware=inv.cat.includes('SOFTWARE')||inv.cat.includes('PCB')||inv.cat.includes('ROBOTICS');
-  const p=`Generate complete, working code for the invention "${inv.name}" (${inv.cat}).
-${isSoftware?'This is a software/firmware invention — write full implementation code.':'This is a physical/hardware invention — write the firmware, control software, and any embedded code needed.'}
-Include:
-1. Main application code with all core functions
-2. Key algorithms that make this invention work
-3. Data structures and models
-4. API or interface code if applicable
-5. Configuration and setup code
-6. Comments explaining each major section
-Make the code production-ready, well-structured and properly commented.`;
+  const p=`Generate the COMPLETE and FULL production-ready code for the invention "${inv.name}" (${inv.cat}).
+
+IMPORTANT: Write ALL the code — do not summarize, do not skip sections, do not say "and so on" or "etc". Write every single function, class, module and line completely.
+
+${isSoftware?'This is a software/firmware invention — write complete implementation.':'This is a physical/hardware invention — write complete firmware, control software and embedded code.'}
+
+Include ALL of the following completely:
+1. COMPLETE main application code — every function fully written
+2. COMPLETE prediction/core algorithms — every line of the algorithm
+3. COMPLETE data structures, models and classes
+4. COMPLETE API endpoints and interfaces
+5. COMPLETE configuration, setup and initialization code
+6. COMPLETE error handling for every function
+7. COMPLETE comments explaining every section
+8. COMPLETE unit test examples
+
+Use proper code formatting with code blocks.
+This code should be ready to copy, paste and run.
+Do NOT leave anything incomplete or as pseudocode.`;
   setStatus(true);
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:2000,messages:[{role:'user',content:p}]})});
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:8000,messages:[{role:'user',content:p}]})});
     const d=await r.json();setStatus(false);
     if(d.error){addSystemMsg(`⚠️ Code generation error: ${d.error.message}`);return;}
     if(d.content&&d.content[0]){
