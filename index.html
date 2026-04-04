@@ -579,6 +579,18 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
         <button class="tbtn" onclick="switchPage('chat');setTimeout(()=>askFollowup('Generate the API structure and endpoints for this invention'),100)">🔌 API STRUCTURE</button>
         <button class="tbtn" onclick="switchPage('chat');setTimeout(()=>askFollowup('Generate the database schema for this invention'),100)">🗄️ DATABASE</button>
         <button class="tbtn" onclick="copyCode()">📋 COPY ALL CODE</button>
+        <button class="tbtn" style="border-color:rgba(57,255,133,0.4);color:var(--neon3);background:rgba(57,255,133,0.06);" onclick="openPastePanel()">📥 PASTE CODE FROM CHAT</button>
+      </div>
+      <!-- PASTE PANEL -->
+      <div id="pastePanel" style="display:none;padding:14px 20px;border-top:1px solid var(--border2);background:rgba(57,255,133,0.03);flex-shrink:0;">
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;letter-spacing:2px;color:var(--neon3);margin-bottom:8px;">📥 PASTE CODE HERE — WILL BE ADDED BELOW EXISTING CODE</div>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <textarea id="pasteCodeInput" style="flex:1;background:rgba(57,255,133,0.03);border:1px solid rgba(57,255,133,0.25);border-top:2px solid rgba(57,255,133,0.4);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;padding:10px 14px;resize:none;outline:none;min-height:80px;" placeholder="Paste code from chat here..."></textarea>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button class="tbtn" style="border-color:rgba(57,255,133,0.4);color:var(--neon3);" onclick="pasteCodeToPage()">✅ ADD</button>
+            <button class="tbtn" onclick="closePastePanel()">✕ CANCEL</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -784,6 +796,7 @@ function renderMsgHTML(m){
   const actions = m.role==='ai' ? `<div class="msg-actions">
     <button class="copy-btn" onclick="copyMsg('${msgId}',this)">📋 COPY</button>
     <button class="newchat-btn" onclick="newChatFrom('${msgId}')">↗ NEW CHAT WITH THIS</button>
+    <button class="newchat-btn" style="border-color:rgba(57,255,133,0.4);color:var(--neon3);background:rgba(57,255,133,0.06);" onclick="sendToCode('${msgId}')">💻 ADD TO CODING PAGE</button>
   </div>` : '';
   return`<div class="msg" id="${msgId}" style="position:relative;"><button class="msg-delete-btn" onclick="deleteMessage('${msgId}')" title="Delete message">🗑</button><div class="msg-av ${ac}">${al}</div><div class="msg-body"><div class="msg-meta ${ac}">${sl} <span class="msg-time">${m.time||''}</span></div><div class="msg-bubble ${ac}" data-raw="${encodeURIComponent(m.content.replace(/<[^>]+>/g,''))}">${m.content}</div>${actions}</div></div>`;
 }
@@ -1073,6 +1086,55 @@ function copyCode(){
   const inv=getCurrentInv();
   if(!inv||!inv.code){alert('No code generated yet.');return;}
   navigator.clipboard.writeText(inv.code).then(()=>{addSystemMsg('✅ Code copied to clipboard!');});
+}
+
+function sendToCode(msgId){
+  const el=document.getElementById(msgId);
+  if(!el)return;
+  const bubble=el.querySelector('.msg-bubble');
+  const raw=decodeURIComponent(bubble.getAttribute('data-raw')||'');
+  const inv=getCurrentInv();
+  if(!inv)return;
+  // Extract code blocks if present
+  const codeBlocks=raw.match(/```[\s\S]*?```/g);
+  const codeToAdd=codeBlocks?codeBlocks.join('\n\n'):raw;
+  inv.code=inv.code?inv.code+'\n\n// ═══ ADDED FROM CHAT ═══\n\n'+codeToAdd:codeToAdd;
+  inv.version+=1;
+  inv.versions.push({v:inv.version,desc:'Code added from chat'});
+  saveInventions();
+  renderCoding(inv);
+  updateRightPanel(inv);
+  renderInvList();
+  document.getElementById('currentVerTag').textContent='v'+inv.version;
+  switchPage('coding');
+  addSystemMsg('✅ Code added to Coding page! Version updated to v'+inv.version);
+}
+
+function openPastePanel(){
+  document.getElementById('pastePanel').style.display='block';
+  document.getElementById('pasteCodeInput').focus();
+}
+
+function closePastePanel(){
+  document.getElementById('pastePanel').style.display='none';
+  document.getElementById('pasteCodeInput').value='';
+}
+
+function pasteCodeToPage(){
+  const text=document.getElementById('pasteCodeInput').value.trim();
+  if(!text){alert('Please paste some code first.');return;}
+  const inv=getCurrentInv();
+  if(!inv)return;
+  inv.code=inv.code?inv.code+'\n\n// ═══ PASTED CODE ═══\n\n'+text:text;
+  inv.version+=1;
+  inv.versions.push({v:inv.version,desc:'Code pasted manually'});
+  saveInventions();
+  renderCoding(inv);
+  updateRightPanel(inv);
+  renderInvList();
+  document.getElementById('currentVerTag').textContent='v'+inv.version;
+  closePastePanel();
+  addSystemMsg('✅ Code pasted and added to Coding page! Version updated to v'+inv.version);
 }
 </script>
 </body>
