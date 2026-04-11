@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INVENTAI · Three-Agent Council</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07090d;
+    --bg-2: #0e131c;
+    --bg-3: #161d2a;
+    --line: #1f2937;
+    --line-2: #2a3548;
+    --text: #e6edf3;
+    --dim: #7d8590;
+    --inv: #4cc9f0;
+    --res: #95e1a3;
+    --cri: #ff6b6b;
+    --syn: #ffd166;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(76,201,240,0.06), transparent 50%),
+      radial-gradient(circle at 80% 100%, rgba(255,209,102,0.04), transparent 50%);
+    min-height: 100vh;
+    padding: 32px 20px 60px;
+  }
+  .frame { max-width: 880px; margin: 0 auto; }
+
+  /* Header */
+  header {
+    border-top: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+    padding: 28px 0;
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .brand {
+    font-family: var(--serif);
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .brand .hex { color: var(--inv); margin-right: 8px; }
+  .brand .div { color: var(--dim); margin: 0 10px; }
+  .sub {
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* Config panel */
+  .config {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 24px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .config::before {
+    content: '◢';
+    position: absolute;
+    top: -1px; right: -1px;
+    color: var(--inv);
+    font-size: 14px;
+    line-height: 1;
+  }
+  .row { margin-bottom: 18px; }
+  .row:last-child { margin-bottom: 0; }
+  .row.split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .row.split { grid-template-columns: 1fr; } }
+
+  label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 7px;
+  }
+  input, select, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line-2);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px 12px;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--inv);
+  }
+  textarea { resize: vertical; min-height: 110px; }
+
+  button.run {
+    width: 100%;
+    background: var(--inv);
+    color: var(--bg);
+    border: none;
+    padding: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: filter 0.15s;
+  }
+  button.run:hover { filter: brightness(1.1); }
+  button.run:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Output */
+  .output { display: flex; flex-direction: column; gap: 18px; }
+  .bubble {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-left-width: 3px;
+    padding: 18px 20px;
+    animation: slide 0.4s ease-out;
+  }
+  @keyframes slide {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .bubble[data-agent="inv"] { border-left-color: var(--inv); }
+  .bubble[data-agent="res"] { border-left-color: var(--res); }
+  .bubble[data-agent="cri"] { border-left-color: var(--cri); }
+  .bubble[data-agent="syn"] { border-left-color: var(--syn); }
+
+  .bubble-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .agent-tag { font-weight: 700; }
+  .bubble[data-agent="inv"] .agent-tag { color: var(--inv); }
+  .bubble[data-agent="res"] .agent-tag { color: var(--res); }
+  .bubble[data-agent="cri"] .agent-tag { color: var(--cri); }
+  .bubble[data-agent="syn"] .agent-tag { color: var(--syn); }
+  .turn { color: var(--dim); }
+  .bubble-body {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .thinking { color: var(--dim); font-style: italic; }
+  .thinking::after {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: currentColor;
+    border-radius: 50%;
+    margin-left: 6px;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse { 50% { opacity: 0.3; } }
+
+  .error {
+    background: rgba(255,107,107,0.1);
+    border: 1px solid var(--cri);
+    color: var(--cri);
+    padding: 14px;
+    margin-top: 14px;
+    font-size: 12px;
+  }
+
+  /* Footer actions */
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .actions button {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--line-2);
+    color: var(--text);
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .actions button:hover {
+    border-color: var(--inv);
+    color: var(--inv);
+  }
+  .hidden { display: none !important; }
+
+  /* Disclaimer */
+  .disclaimer {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--dim);
+    line-height: 1.7;
+  }
+  .disclaimer code {
+    color: var(--inv);
+    background: var(--bg-2);
+    padding: 1px 6px;
+    border: 1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+<header>
+  <div class="brand"><span class="hex">⬡</span>INVENTAI<span class="div">/</span>COUNCIL</div>
+  <div class="sub">three-agent improvement loop · inventor → researcher → critic → refinement</div>
+</header>
+
+<section class="config">
+  <div class="row split">
+    <div>
+      <label>Anthropic API Key</label>
+      <input type="password" id="apiKey" placeholder="sk-ant-...">
+    </div>
+    <div>
+      <label>Model</label>
+      <select id="model">
+        <option value="claude-sonnet-4-6">Sonnet 4.6 — faster, cheaper</option>
+        <option value="claude-opus-4-6">Opus 4.6 — smarter, slower</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <label>Invention Description</label>
+    <textarea id="invention" placeholder="Describe your invention. Include the unique features that differentiate it from existing solutions.">INTENTION PREDICTION INTERFACE — a phone/wearable system that predicts what the user will do next and pre-prepares the action. Combines: behavioral tracking (app sequences, time of day, location), facial expression + micro-expression recognition, retinal/eye tracking, and a mentalism-inspired prediction layer (cold reading, Barnum effect, pre-cognition illusion mapped to algorithms). All processing on-device. Predictions are tiered by risk (passive/low/medium/high/critical) and high-risk actions require explicit user approval before execution.</textarea>
+  </div>
+
+  <div class="row">
+    <label>What do you want the council to improve?</label>
+    <input type="text" id="focus" placeholder="e.g. prediction accuracy, battery life, cold-start problem, privacy guarantees..." value="prediction accuracy in the first 7 days when there is little user data">
+  </div>
+
+  <div class="row">
+    <button class="run" id="runBtn">▶ CONVENE THE COUNCIL</button>
+  </div>
+</section>
+
+<section class="output" id="output"></section>
+
+<div class="actions hidden" id="actions">
+  <button id="againBtn">↻ NEW PROPOSAL</button>
+  <button id="exportBtn">↓ EXPORT TRANSCRIPT</button>
+</div>
+
+<div class="disclaimer">
+  <strong>API key handling:</strong> Your key is stored only in your browser's session memory and is sent directly to Anthropic's API. It is never logged or transmitted anywhere else. To use this page you need an Anthropic API key from <code>console.anthropic.com</code>. Each council run costs roughly $0.05–$0.30 depending on model.
+  <br><br>
+  <strong>How to read the output:</strong> Each council proceeds in 4 turns. The Inventor proposes one specific improvement. The Researcher fact-checks for prior art and feasibility. The Critic attacks every weak point. The Inventor returns with a refined version that addresses the critique.
+</div>
+
+</div>
+
+<script>
+const SYS_INVENTOR = `You are the INVENTOR agent in a three-agent invention improvement council.
+
+Your job: propose ONE specific, concrete improvement to the invention. Not a list — one improvement, deeply specified.
+
+Rules:
+- Be specific. "Add machine learning" is bad. "Add a 2-week cold-start onboarding flow that asks the user 8 lifestyle questions and seeds the Bayesian priors" is good.
+- Explain WHY this improvement matters and what problem it solves.
+- Explain HOW it would integrate with the existing invention.
+- Be honest about complexity and tradeoffs.
+- Do NOT pad with marketing language. Engineers and patent examiners are reading this.
+- Keep it under 400 words.
+
+If you are receiving feedback from the Researcher and Critic to refine an earlier proposal, address every issue they raised. If the proposal can't be saved, say so plainly and pivot to a different approach.`;
+
+const SYS_RESEARCHER = `You are the RESEARCHER agent in a three-agent invention improvement council.
+
+Your job: fact-check the Inventor's proposal. Find prior art. Assess technical feasibility. Identify what already exists.
+
+Rules:
+- Be specific about what already exists. Name companies, products, papers, or patents when you can.
+- Distinguish between "exists exactly" / "exists similarly" / "novel as far as I know".
+- Flag any technical claims that may be physically/computationally impossible on current hardware.
+- Estimate cost and timeline ranges for implementation.
+- Be honest about what you don't know — you cannot search the web in real time, so qualify your knowledge.
+- Keep it under 400 words.
+
+Your goal is not to kill the proposal — it's to ground it in reality.`;
+
+const SYS_CRITIC = `You are the CRITIC agent in a three-agent invention improvement council.
+
+Your job: find every reason this proposal might fail. You are deliberately adversarial — but constructive.
+
+Rules:
+- Attack the weak points. Edge cases. Failure modes. User experience problems. Privacy and safety concerns. Cost. Battery. Maintenance burden. Adoption friction. Regulatory issues.
+- Be specific. "It might not work" is useless. "Users in apartments share WiFi networks, so location inference will misfire when neighbors are home" is useful.
+- Rank your concerns from most to least serious.
+- Do NOT be cruel or dismissive. Your goal is to make the proposal stronger, not to win.
+- Keep it under 400 words.
+
+End with one sentence: "The single biggest risk is: [X]."`;
+
+const apiKeyInput = document.getElementById('apiKey');
+const modelInput = document.getElementById('model');
+const inventionInput = document.getElementById('invention');
+const focusInput = document.getElementById('focus');
+const runBtn = document.getElementById('runBtn');
+const output = document.getElementById('output');
+const actions = document.getElementById('actions');
+const exportBtn = document.getElementById('exportBtn');
+const againBtn = document.getElementById('againBtn');
+
+// Restore saved key for the session
+if (sessionStorage.getItem('ipi_key')) {
+  apiKeyInput.value = sessionStorage.getItem('ipi_key');
+}
+
+let transcript = [];
+
+async function callClaude(systemPrompt, userMessage, apiKey, model) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: model,
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }]
+    })
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data?.error?.message || `HTTP ${res.status}`);
+  }
+  return data.content.map(b => b.text || '').join('\n').trim();
+}
+
+function addBubble(agent, label) {
+  const div = document.createElement('div');
+  div.className = 'bubble';
+  div.dataset.agent = agent;
+  div.innerHTML = `
+    <div class="bubble-head">
+      <span class="agent-tag">${label}</span>
+      <span class="turn">turn ${output.children.length + 1}</span>
+    </div>
+    <div class="bubble-body thinking">working</div>
+  `;
+  output.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return div.querySelector('.bubble-body');
+}
+
+function setBody(el, text) {
+  el.classList.remove('thinking');
+  el.textContent = text;
+}
+
+function addError(message) {
+  const div = document.createElement('div');
+  div.className = 'error';
+  div.textContent = 'Error: ' + message;
+  output.appendChild(div);
+}
+
+async function runCouncil() {
+  const apiKey = apiKeyInput.value.trim();
+  const model = modelInput.value;
+  const invention = inventionInput.value.trim();
+  const focus = focusInput.value.trim();
+
+  if (!apiKey) { alert('Please paste your Anthropic API key first.'); return; }
+  if (!invention) { alert('Please describe the invention.'); return; }
+  if (!focus) { alert('Please specify what to improve.'); return; }
+
+  sessionStorage.setItem('ipi_key', apiKey);
+
+  runBtn.disabled = true;
+  runBtn.textContent = '◌ COUNCIL IN SESSION';
+  output.innerHTML = '';
+  actions.classList.add('hidden');
+  transcript = [];
+
+  try {
+    // Turn 1: Inventor proposes
+    const invBody = addBubble('inv', 'INVENTOR · proposal');
+    const proposal = await callClaude(
+      SYS_INVENTOR,
+      `INVENTION:\n${invention}\n\nIMPROVEMENT FOCUS:\n${focus}\n\nPropose one specific improvement.`,
+      apiKey, model
+    );
+    setBody(invBody, proposal);
+    transcript.push({ agent: 'INVENTOR', text: proposal });
+
+    // Turn 2: Researcher fact-checks
+    const resBody = addBubble('res', 'RESEARCHER · prior art & feasibility');
+    const research = await callClaude(
+      SYS_RESEARCHER,
+      `INVENTION:\n${invention}\n\nINVENTOR'S PROPOSAL:\n${proposal}\n\nFact-check this proposal.`,
+      apiKey, model
+    );
+    setBody(resBody, research);
+    transcript.push({ agent: 'RESEARCHER', text: research });
+
+    // Turn 3: Critic attacks
+    const criBody = addBubble('cri', 'CRITIC · weaknesses & risks');
+    const critique = await callClaude(
+      SYS_CRITIC,
+      `INVENTION:\n${invention}\n\nINVENTOR'S PROPOSAL:\n${proposal}\n\nRESEARCHER'S FINDINGS:\n${research}\n\nFind every reason this might fail.`,
+      apiKey, model
+    );
+    setBody(criBody, critique);
+    transcript.push({ agent: 'CRITIC', text: critique });
+
+    // Turn 4: Inventor refines
+    const synBody = addBubble('syn', 'INVENTOR · refined proposal');
+    const refined = await callClaude(
+      SYS_INVENTOR,
+      `INVENTION:\n${invention}\n\nYOUR ORIGINAL PROPOSAL:\n${proposal}\n\nRESEARCHER FINDINGS:\n${research}\n\nCRITIC ATTACKS:\n${critique}\n\nRefine the proposal to address every issue raised. If the proposal cannot be saved, propose a different approach.`,
+      apiKey, model
+    );
+    setBody(synBody, refined);
+    transcript.push({ agent: 'INVENTOR (REFINED)', text: refined });
+
+    actions.classList.remove('hidden');
+  } catch (err) {
+    addError(err.message);
+  } finally {
+    runBtn.disabled = false;
+    runBtn.textContent = '▶ CONVENE THE COUNCIL';
+  }
+}
+
+function exportTranscript() {
+  const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  const lines = [
+    'INVENTAI COUNCIL TRANSCRIPT',
+    '═══════════════════════════════════════════',
+    `Date:    ${date}`,
+    `Focus:   ${focusInput.value}`,
+    `Model:   ${modelInput.value}`,
+    '═══════════════════════════════════════════',
+    '',
+    `INVENTION:`,
+    inventionInput.value,
+    '',
+    '═══════════════════════════════════════════',
+    ''
+  ];
+  for (const turn of transcript) {
+    lines.push(`▼ ${turn.agent}`);
+    lines.push('───────────────────────────────────────────');
+    lines.push(turn.text);
+    lines.push('');
+  }
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `inventai-council-${Date.now()}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+runBtn.addEventListener('click', runCouncil);
+exportBtn.addEventListener('click', exportTranscript);
+againBtn.addEventListener('click', () => {
+  output.innerHTML = '';
+  actions.classList.add('hidden');
+  focusInput.focus();
+});
+</script>
+</body>
+</html>

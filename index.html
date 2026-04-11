@@ -3,505 +3,1202 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INVENTAI · Three-Agent Council</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&display=swap" rel="stylesheet">
+<title>INVENTAI — Invention Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #07090d;
-    --bg-2: #0e131c;
-    --bg-3: #161d2a;
-    --line: #1f2937;
-    --line-2: #2a3548;
-    --text: #e6edf3;
-    --dim: #7d8590;
-    --inv: #4cc9f0;
-    --res: #95e1a3;
-    --cri: #ff6b6b;
-    --syn: #ffd166;
-    --mono: 'JetBrains Mono', ui-monospace, monospace;
-    --serif: 'Fraunces', Georgia, serif;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 14px;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
-  body {
-    background-image:
-      radial-gradient(circle at 20% 0%, rgba(76,201,240,0.06), transparent 50%),
-      radial-gradient(circle at 80% 100%, rgba(255,209,102,0.04), transparent 50%);
-    min-height: 100vh;
-    padding: 32px 20px 60px;
-  }
-  .frame { max-width: 880px; margin: 0 auto; }
+:root {
+  --bg:#03070f;--metal1:#0b1220;--metal2:#0f1828;--metal3:#141e30;--metal4:#1a2640;
+  --neon:#00eeff;--neon2:#ff2d78;--neon3:#39ff85;--neon4:#c83dff;--gold:#ffc844;
+  --text:#cce8ff;--text2:#5a84a8;--text3:#2a4a68;
+  --border:rgba(0,238,255,0.08);--border2:rgba(0,238,255,0.18);
+  --shine:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,rgba(255,255,255,0) 60%);
+  --glow-c:0 0 20px rgba(0,238,255,0.5),0 0 60px rgba(0,238,255,0.15);
+  --glow-p:0 0 20px rgba(200,61,255,0.5),0 0 60px rgba(200,61,255,0.15);
+  --glow-g:0 0 20px rgba(57,255,133,0.5),0 0 60px rgba(57,255,133,0.15);
+  --glow-r:0 0 20px rgba(255,45,120,0.5),0 0 60px rgba(255,45,120,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:rgba(0,238,255,0.2);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,238,255,0.4);}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:400;overflow:auto;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(ellipse 70% 50% at 15% 10%,rgba(0,238,255,0.05) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 85% 85%,rgba(200,61,255,0.04) 0%,transparent 60%),linear-gradient(rgba(0,238,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(0,238,255,0.012) 1px,transparent 1px);
+  background-size:100% 100%,100% 100%,60px 60px,60px 60px;}
+.scanline{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon),transparent);opacity:0;animation:scan 10s linear infinite;z-index:999;pointer-events:none;}
+@keyframes scan{0%{top:-2px;opacity:0;}4%{opacity:0.35;}96%{opacity:0.15;}100%{top:100vh;opacity:0;}}
 
-  /* Header */
-  header {
-    border-top: 1px solid var(--line-2);
-    border-bottom: 1px solid var(--line-2);
-    padding: 28px 0;
-    margin-bottom: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .brand {
-    font-family: var(--serif);
-    font-size: 38px;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
-  .brand .hex { color: var(--inv); margin-right: 8px; }
-  .brand .div { color: var(--dim); margin: 0 10px; }
-  .sub {
-    font-size: 11px;
-    color: var(--dim);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
+/* HEADER */
+header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:66px;
+  background:linear-gradient(180deg,rgba(3,7,15,0.99) 0%,rgba(11,18,32,0.96) 100%);
+  border-bottom:1px solid var(--border2);backdrop-filter:blur(24px);
+  box-shadow:0 4px 40px rgba(0,0,0,0.7),0 1px 0 rgba(0,238,255,0.12);}
+.logo{display:flex;align-items:center;gap:16px;}
+.logo-hex{width:48px;height:48px;flex-shrink:0;filter:drop-shadow(0 0 12px rgba(0,238,255,0.7));}
+.logo-hex svg{width:100%;height:100%;}
+.logo-name{font-family:'Chakra Petch',sans-serif;font-size:22px;font-weight:700;letter-spacing:6px;
+  background:linear-gradient(90deg,#00eeff 0%,#c83dff 50%,#00eeff 100%);background-size:200%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4s linear infinite;}
+@keyframes shimmer{0%{background-position:0%;}100%{background-position:200%;}}
+.logo-tagline{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:3px;color:var(--text3);margin-top:2px;}
+.api-status{display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:11px;}
+.status-dot{width:8px;height:8px;border-radius:50%;}
+.status-dot.online{background:var(--neon3);box-shadow:0 0 10px var(--neon3);animation:pdot 2s ease-in-out infinite;}
+.status-dot.thinking{background:var(--gold);box-shadow:0 0 10px var(--gold);animation:pdot 0.5s ease-in-out infinite;}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.65);}}
+.status-text.online{color:var(--neon3);}
+.status-text.thinking{color:var(--gold);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.hbtn{font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;padding:9px 22px;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}
+.hbtn::before{content:'';position:absolute;inset:0;background:var(--shine);pointer-events:none;}
+.hbtn-outline{background:linear-gradient(135deg,var(--metal2),var(--metal3));color:var(--text2);border:1px solid var(--border2);}
+.hbtn-outline:hover{color:var(--neon);border-color:var(--neon);box-shadow:var(--glow-c);}
+.hbtn-primary{background:linear-gradient(135deg,rgba(0,238,255,0.14),rgba(200,61,255,0.1));color:var(--neon);border:1px solid rgba(0,238,255,0.45);}
+.hbtn-primary:hover{background:linear-gradient(135deg,rgba(0,238,255,0.28),rgba(200,61,255,0.2));box-shadow:var(--glow-c);transform:translateY(-1px);}
+.hbtn:active{transform:scale(0.96);}
 
-  /* Config panel */
-  .config {
-    background: var(--bg-2);
-    border: 1px solid var(--line);
-    padding: 24px;
-    margin-bottom: 28px;
-    position: relative;
-  }
-  .config::before {
-    content: '◢';
-    position: absolute;
-    top: -1px; right: -1px;
-    color: var(--inv);
-    font-size: 14px;
-    line-height: 1;
-  }
-  .row { margin-bottom: 18px; }
-  .row:last-child { margin-bottom: 0; }
-  .row.split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 600px) { .row.split { grid-template-columns: 1fr; } }
+/* NAV */
+nav{position:sticky;top:66px;z-index:90;display:flex;align-items:stretch;
+  background:linear-gradient(180deg,var(--metal1),var(--metal2));
+  border-bottom:1px solid var(--border2);backdrop-filter:blur(12px);
+  overflow-x:auto;overflow-y:hidden;box-shadow:0 3px 20px rgba(0,0,0,0.5);}
+nav::-webkit-scrollbar{height:2px;}
+.navtab{font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:600;letter-spacing:2.5px;
+  padding:14px 26px;color:var(--text3);cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;transition:all 0.2s;display:flex;align-items:center;gap:8px;flex-shrink:0;position:relative;}
+.navtab:hover{color:var(--text2);background:rgba(0,238,255,0.03);}
+.navtab.active{color:var(--neon);border-bottom-color:var(--neon);background:rgba(0,238,255,0.05);text-shadow:0 0 14px rgba(0,238,255,0.8);}
+.navtab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:3px;background:var(--neon);box-shadow:var(--glow-c);}
 
-  label {
-    display: block;
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--dim);
-    margin-bottom: 7px;
-  }
-  input, select, textarea {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--line-2);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 10px 12px;
-    transition: border-color 0.15s;
-  }
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--inv);
-  }
-  textarea { resize: vertical; min-height: 110px; }
+/* LAYOUT */
+.app-body{display:flex;min-height:calc(100vh - 114px);overflow-x:auto;position:relative;z-index:5;}
 
-  button.run {
-    width: 100%;
-    background: var(--inv);
-    color: var(--bg);
-    border: none;
-    padding: 14px;
-    font-family: var(--mono);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    cursor: pointer;
-    margin-top: 4px;
-    transition: filter 0.15s;
-  }
-  button.run:hover { filter: brightness(1.1); }
-  button.run:disabled { opacity: 0.5; cursor: not-allowed; }
+/* SIDEBAR */
+.sidebar{width:252px;flex-shrink:0;background:linear-gradient(180deg,var(--metal1),var(--bg));border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:100%;overflow-y:auto;overflow-x:hidden;}
+.sidebar-head{padding:16px 16px 12px;background:linear-gradient(135deg,var(--metal2),var(--metal3));border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;}
+.sidebar-title{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:600;letter-spacing:4px;color:var(--text3);}
+.sidebar-count{font-family:'Chakra Petch',sans-serif;font-size:15px;font-weight:700;color:var(--neon);text-shadow:0 0 14px var(--neon);}
+.inv-list{flex:1;padding:8px;display:flex;flex-direction:column;gap:4px;}
+.inv-card{padding:13px 14px;background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid var(--border);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;border-radius:2px;}
+.inv-card::before{content:'';position:absolute;inset:0;background:var(--shine);pointer-events:none;}
+.inv-card:hover{border-color:rgba(0,238,255,0.3);transform:translateX(3px);box-shadow:0 4px 20px rgba(0,0,0,0.4),inset 0 0 20px rgba(0,238,255,0.03);}
+.inv-card.active{border-color:rgba(0,238,255,0.5);background:linear-gradient(135deg,rgba(0,238,255,0.08),rgba(200,61,255,0.04));box-shadow:0 0 24px rgba(0,238,255,0.12),inset 0 0 30px rgba(0,238,255,0.04);}
+.inv-card.active::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--neon),var(--neon4));box-shadow:0 0 14px var(--neon);}
+.inv-cat{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--neon4);margin-bottom:4px;}
+.inv-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.3;}
+.inv-footer{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.inv-score{font-family:'Share Tech Mono',monospace;font-size:9px;padding:2px 7px;border:1px solid;border-radius:1px;}
+.score-hi{color:var(--neon3);border-color:rgba(57,255,133,0.35);background:rgba(57,255,133,0.07);text-shadow:0 0 8px rgba(57,255,133,0.5);}
+.score-md{color:var(--gold);border-color:rgba(255,200,68,0.35);background:rgba(255,200,68,0.06);}
+.score-lo{color:var(--neon2);border-color:rgba(255,45,120,0.35);background:rgba(255,45,120,0.06);}
+.inv-ver{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--neon4);border:1px solid rgba(200,61,255,0.3);padding:2px 5px;background:rgba(200,61,255,0.06);}
+.inv-date{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text3);margin-left:auto;}
+.new-inv-btn{margin:10px;padding:12px;text-align:center;cursor:pointer;font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--neon);background:linear-gradient(135deg,rgba(0,238,255,0.05),rgba(200,61,255,0.03));border:1px dashed rgba(0,238,255,0.28);transition:all 0.25s;}
+.new-inv-btn:hover{background:linear-gradient(135deg,rgba(0,238,255,0.12),rgba(200,61,255,0.07));border-color:var(--neon);box-shadow:var(--glow-c);}
 
-  /* Output */
-  .output { display: flex; flex-direction: column; gap: 18px; }
-  .bubble {
-    background: var(--bg-2);
-    border: 1px solid var(--line);
-    border-left-width: 3px;
-    padding: 18px 20px;
-    animation: slide 0.4s ease-out;
-  }
-  @keyframes slide {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .bubble[data-agent="inv"] { border-left-color: var(--inv); }
-  .bubble[data-agent="res"] { border-left-color: var(--res); }
-  .bubble[data-agent="cri"] { border-left-color: var(--cri); }
-  .bubble[data-agent="syn"] { border-left-color: var(--syn); }
+/* CENTER */
+.center{flex:1;min-width:400px;display:flex;flex-direction:column;overflow:auto;background:var(--bg);}
+.page{display:none;flex:1;flex-direction:column;overflow:auto;}
+.page.active{display:flex;}
 
-  .bubble-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-  .agent-tag { font-weight: 700; }
-  .bubble[data-agent="inv"] .agent-tag { color: var(--inv); }
-  .bubble[data-agent="res"] .agent-tag { color: var(--res); }
-  .bubble[data-agent="cri"] .agent-tag { color: var(--cri); }
-  .bubble[data-agent="syn"] .agent-tag { color: var(--syn); }
-  .turn { color: var(--dim); }
-  .bubble-body {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text);
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
+/* CHAT TOOLBAR */
+.chat-toolbar{padding:12px 20px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;background:linear-gradient(135deg,var(--metal1),var(--metal2));box-shadow:0 2px 20px rgba(0,0,0,0.35);overflow-x:auto;}
+.inv-title-display{font-family:'Chakra Petch',sans-serif;font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+.ver-tag{font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 8px;border:1px solid rgba(200,61,255,0.4);color:var(--neon4);background:rgba(200,61,255,0.08);text-shadow:0 0 8px rgba(200,61,255,0.5);}
+.toolbar-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.tbtn{font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;padding:7px 15px;cursor:pointer;transition:all 0.2s;white-space:nowrap;background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid var(--border2);color:var(--text2);clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);position:relative;overflow:hidden;}
+.tbtn::before{content:'';position:absolute;inset:0;background:var(--shine);}
+.tbtn:hover{color:var(--neon);border-color:rgba(0,238,255,0.5);box-shadow:var(--glow-c);}
+.tbtn:active{transform:scale(0.95);}
+.tbtn.active-btn{color:var(--neon);border-color:rgba(0,238,255,0.5);background:linear-gradient(135deg,rgba(0,238,255,0.1),rgba(200,61,255,0.06));box-shadow:0 0 12px rgba(0,238,255,0.2);}
+.mfg-select{font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:500;letter-spacing:1px;padding:7px 28px 7px 12px;cursor:pointer;background:linear-gradient(135deg,rgba(200,61,255,0.08),rgba(200,61,255,0.03)) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23c83dff'/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid rgba(200,61,255,0.35);color:var(--neon4);appearance:none;-webkit-appearance:none;transition:all 0.2s;}
+.mfg-select:hover{border-color:var(--neon4);box-shadow:var(--glow-p);}
+.mfg-select option{background:var(--metal2);color:var(--text);}
 
-  .thinking { color: var(--dim); font-style: italic; }
-  .thinking::after {
-    content: '';
-    display: inline-block;
-    width: 6px; height: 6px;
-    background: currentColor;
-    border-radius: 50%;
-    margin-left: 6px;
-    animation: pulse 1s infinite;
-  }
-  @keyframes pulse { 50% { opacity: 0.3; } }
+/* MESSAGES */
+.messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;}
+.msg{display:flex;gap:12px;animation:fadein 0.35s cubic-bezier(0.34,1.2,0.64,1);}
+@keyframes fadein{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.msg-av{width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:700;}
+.msg-av.ai{background:linear-gradient(135deg,var(--neon),var(--neon4));color:var(--bg);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);box-shadow:0 0 18px rgba(0,238,255,0.5);}
+.msg-av.user{background:linear-gradient(135deg,var(--metal3),var(--metal4));border:1px solid rgba(0,238,255,0.3);color:var(--neon);border-radius:2px;}
+.msg-av.system{background:linear-gradient(135deg,rgba(57,255,133,0.1),rgba(57,255,133,0.04));border:1px solid rgba(57,255,133,0.3);color:var(--neon3);font-size:16px;border-radius:50%;box-shadow:0 0 14px rgba(57,255,133,0.2);}
+.msg-body{flex:1;min-width:0;}
+.msg-meta{font-family:'Share Tech Mono',monospace;font-size:9px;margin-bottom:6px;display:flex;align-items:center;gap:8px;letter-spacing:1px;}
+.msg-meta.ai{color:var(--neon);}
+.msg-meta.user{color:var(--text2);}
+.msg-meta.system{color:var(--neon3);}
+.msg-time{color:var(--text3);font-size:8px;}
+.msg-bubble{padding:14px 16px;font-size:13px;line-height:1.8;font-weight:400;border-radius:2px;}
+.msg-bubble.ai{background:linear-gradient(135deg,rgba(0,238,255,0.04),rgba(200,61,255,0.02));border:1px solid rgba(0,238,255,0.12);border-left:3px solid var(--neon);box-shadow:inset 0 0 40px rgba(0,238,255,0.02),-4px 0 20px rgba(0,238,255,0.08);}
+.msg-bubble.user{background:linear-gradient(135deg,rgba(200,61,255,0.05),rgba(200,61,255,0.01));border:1px solid rgba(200,61,255,0.12);border-left:3px solid var(--neon4);}
+.msg-bubble.system{background:linear-gradient(135deg,rgba(57,255,133,0.04),rgba(57,255,133,0.01));border:1px solid rgba(57,255,133,0.12);border-left:3px solid var(--neon3);}
+.hl{color:var(--neon);font-weight:600;text-shadow:0 0 10px rgba(0,238,255,0.4);}
+.hl2{color:var(--neon3);font-weight:600;text-shadow:0 0 10px rgba(57,255,133,0.4);}
+.hl3{color:var(--neon4);font-weight:600;text-shadow:0 0 10px rgba(200,61,255,0.4);}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.chip{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:600;letter-spacing:1px;padding:5px 12px;cursor:pointer;transition:all 0.2s;background:linear-gradient(135deg,rgba(0,238,255,0.06),rgba(0,238,255,0.02));border:1px solid rgba(0,238,255,0.2);color:var(--neon);clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);}
+.chip:hover{background:linear-gradient(135deg,rgba(0,238,255,0.16),rgba(0,238,255,0.08));border-color:var(--neon);box-shadow:var(--glow-c);}
+.thinking-bubble{padding:14px 16px;background:linear-gradient(135deg,rgba(0,238,255,0.04),transparent);border:1px solid rgba(0,238,255,0.1);border-left:3px solid var(--neon);display:flex;align-items:center;gap:10px;}
+.thinking-dots{display:flex;gap:5px;}
+.thinking-dots span{width:6px;height:6px;border-radius:50%;background:var(--neon);box-shadow:0 0 8px var(--neon);animation:tdot 1s ease-in-out infinite;}
+.thinking-dots span:nth-child(2){animation-delay:0.2s;}
+.thinking-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes tdot{0%,100%{opacity:0.2;transform:scale(0.6);}50%{opacity:1;transform:scale(1);}}
+.thinking-text{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:2px;}
 
-  .error {
-    background: rgba(255,107,107,0.1);
-    border: 1px solid var(--cri);
-    color: var(--cri);
-    padding: 14px;
-    margin-top: 14px;
-    font-size: 12px;
-  }
+/* INPUT */
+.input-zone{padding:16px 20px;border-top:1px solid var(--border2);flex-shrink:0;background:linear-gradient(0deg,var(--metal1),var(--metal2));box-shadow:0 -4px 30px rgba(0,0,0,0.45);}
+.attach-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.abtn{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:600;letter-spacing:1px;padding:5px 12px;cursor:pointer;transition:all 0.2s;background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid var(--border);color:var(--text3);display:flex;align-items:center;gap:5px;}
+.abtn:hover{color:var(--neon);border-color:rgba(0,238,255,0.4);box-shadow:0 0 12px rgba(0,238,255,0.15);}
+.input-row{display:flex;gap:8px;align-items:flex-end;}
+.main-input{flex:1;background:linear-gradient(135deg,rgba(0,238,255,0.03),rgba(0,0,0,0.15));border:1px solid var(--border);border-top:2px solid rgba(0,238,255,0.2);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:13px;padding:12px 16px;resize:none;outline:none;min-height:48px;transition:all 0.25s;border-radius:1px;}
+.main-input:focus{border-color:rgba(0,238,255,0.5);border-top-color:var(--neon);box-shadow:var(--glow-c),inset 0 0 20px rgba(0,238,255,0.03);}
+.main-input::placeholder{color:var(--text3);}
+.mic-btn{width:48px;height:48px;flex-shrink:0;cursor:pointer;background:linear-gradient(135deg,rgba(57,255,133,0.08),rgba(57,255,133,0.03));border:1px solid rgba(57,255,133,0.3);color:var(--neon3);font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.mic-btn:hover{box-shadow:var(--glow-g);border-color:var(--neon3);}
+.mic-btn.recording{background:rgba(255,45,120,0.12);border-color:rgba(255,45,120,0.5);color:var(--neon2);box-shadow:var(--glow-r);animation:recpulse 0.8s ease-in-out infinite;}
+@keyframes recpulse{0%,100%{box-shadow:var(--glow-r);}50%{box-shadow:none;}}
+.send-btn{font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;padding:0 22px;height:48px;flex-shrink:0;cursor:pointer;transition:all 0.25s;background:linear-gradient(135deg,rgba(0,238,255,0.15),rgba(200,61,255,0.1));border:1px solid rgba(0,238,255,0.5);color:var(--neon);clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);position:relative;overflow:hidden;}
+.send-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);transform:translateX(-100%);transition:transform 0.4s;}
+.send-btn:hover::before{transform:translateX(100%);}
+.send-btn:hover{background:linear-gradient(135deg,rgba(0,238,255,0.3),rgba(200,61,255,0.2));box-shadow:var(--glow-c);}
+.send-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.send-btn:active:not(:disabled){transform:scale(0.96);}
 
-  /* Footer actions */
-  .actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 28px;
-  }
-  .actions button {
-    flex: 1;
-    background: transparent;
-    border: 1px solid var(--line-2);
-    color: var(--text);
-    padding: 12px;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .actions button:hover {
-    border-color: var(--inv);
-    color: var(--inv);
-  }
-  .hidden { display: none !important; }
+/* CONTENT PAGES */
+.bp-page,.manual-page,.viz-page,.dashboard{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:16px;}
+.viz-page{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-content:start;}
+.bp-section,.manual-section,.viz-panel{background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid var(--border);padding:20px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+.bp-section::before,.manual-section::before,.viz-panel::before{content:'';position:absolute;inset:0;background:var(--shine);pointer-events:none;}
+.bp-section::after,.manual-section::after{content:'';position:absolute;top:0;left:0;width:16px;height:16px;border-top:2px solid var(--neon);border-left:2px solid var(--neon);opacity:0.6;}
+.bp-section:hover{border-color:rgba(0,238,255,0.25);}
+.bp-section-title,.viz-title{font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--neon);margin-bottom:14px;display:flex;align-items:center;gap:10px;text-shadow:0 0 14px rgba(0,238,255,0.5);}
+.bp-section-title::after,.viz-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent);}
+.bp-content,.step-content{font-size:13px;line-height:1.8;color:var(--text);}
+.bp-diagram{font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.5;color:var(--neon3);background:linear-gradient(135deg,rgba(57,255,133,0.04),rgba(0,0,0,0.2));border:1px solid rgba(57,255,133,0.15);padding:16px;overflow-x:auto;white-space:pre;text-shadow:0 0 8px rgba(57,255,133,0.3);}
+.bp-empty{text-align:center;padding:80px 20px;color:var(--text3);font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:3px;line-height:2.2;}
+.step-num{font-family:'Chakra Petch',sans-serif;font-size:32px;font-weight:700;color:rgba(0,238,255,0.08);line-height:1;margin-bottom:6px;}
+.step-title{font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--neon);margin-bottom:10px;text-shadow:0 0 10px rgba(0,238,255,0.4);}
+.viz-panel.full{grid-column:1/-1;}
+.viz-placeholder{min-height:180px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:repeating-linear-gradient(45deg,rgba(0,238,255,0.015) 0px,rgba(0,238,255,0.015) 1px,transparent 1px,transparent 24px);border:1px dashed rgba(0,238,255,0.12);}
+.viz-placeholder-text{font-family:'Chakra Petch',sans-serif;font-size:10px;color:var(--text3);letter-spacing:3px;text-align:center;line-height:2.2;}
 
-  /* Disclaimer */
-  .disclaimer {
-    margin-top: 32px;
-    padding-top: 20px;
-    border-top: 1px solid var(--line);
-    font-size: 11px;
-    color: var(--dim);
-    line-height: 1.7;
-  }
-  .disclaimer code {
-    color: var(--inv);
-    background: var(--bg-2);
-    padding: 1px 6px;
-    border: 1px solid var(--line);
-  }
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.dash-metric{background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid var(--border);padding:18px;position:relative;overflow:hidden;transition:transform 0.2s;}
+.dash-metric::before{content:'';position:absolute;inset:0;background:var(--shine);}
+.dash-metric:hover{transform:translateY(-2px);}
+.dash-metric.cyan::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon),transparent);box-shadow:0 0 12px var(--neon);}
+.dash-metric.green::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon3),transparent);box-shadow:0 0 12px var(--neon3);}
+.dash-metric.purple::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon4),transparent);box-shadow:0 0 12px var(--neon4);}
+.dash-metric.orange::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);box-shadow:0 0 12px var(--gold);}
+.dash-metric-val{font-family:'Chakra Petch',sans-serif;font-size:32px;font-weight:700;line-height:1;margin-bottom:4px;}
+.dash-metric.cyan .dash-metric-val{color:var(--neon);text-shadow:0 0 20px rgba(0,238,255,0.6);}
+.dash-metric.green .dash-metric-val{color:var(--neon3);text-shadow:0 0 20px rgba(57,255,133,0.6);}
+.dash-metric.purple .dash-metric-val{color:var(--neon4);text-shadow:0 0 20px rgba(200,61,255,0.6);}
+.dash-metric.orange .dash-metric-val{color:var(--gold);text-shadow:0 0 20px rgba(255,200,68,0.6);}
+.dash-metric-label{font-family:'Chakra Petch',sans-serif;font-size:8px;letter-spacing:3px;color:var(--text3);}
+.dash-inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.dash-inv-card{background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid var(--border);padding:18px;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;}
+.dash-inv-card::before{content:'';position:absolute;inset:0;background:var(--shine);}
+.dash-inv-card:hover{border-color:rgba(0,238,255,0.35);box-shadow:0 8px 30px rgba(0,0,0,0.4),var(--glow-c);transform:translateY(-3px);}
+.dash-inv-card-cat{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--neon4);margin-bottom:6px;}
+.dash-inv-card-name{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text);}
+.dash-progress{height:2px;background:rgba(255,255,255,0.04);margin-bottom:8px;}
+.dash-progress-fill{height:100%;position:relative;transition:width 1s ease;}
+.dash-progress-fill::after{content:'';position:absolute;right:-3px;top:-3px;width:8px;height:8px;border-radius:50%;background:inherit;box-shadow:0 0 8px currentColor;}
+.dash-score-row{display:flex;justify-content:space-between;align-items:center;}
+.dash-score-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);}
+.dash-score-val{font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;}
+
+/* RIGHT PANEL */
+.rpanel{width:275px;flex-shrink:0;background:linear-gradient(180deg,var(--metal1),var(--bg));border-left:1px solid var(--border);overflow-y:auto;overflow-x:hidden;min-height:100%;}
+.rp-section{border-bottom:1px solid var(--border);padding:14px 16px;}
+.rp-title{font-family:'Chakra Petch',sans-serif;font-size:8px;font-weight:700;letter-spacing:4px;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.rp-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.score-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);width:72px;flex-shrink:0;}
+.score-bar{flex:1;height:4px;background:rgba(255,255,255,0.04);position:relative;overflow:hidden;border-radius:2px;}
+.score-fill{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(0.34,1.2,0.64,1);}
+.score-fill::after{content:'';position:absolute;right:0;top:-3px;width:10px;height:10px;border-radius:50%;background:inherit;box-shadow:0 0 10px currentColor;}
+.fill-c{background:linear-gradient(90deg,rgba(0,238,255,0.5),var(--neon));}
+.fill-g{background:linear-gradient(90deg,rgba(57,255,133,0.5),var(--neon3));}
+.fill-p{background:linear-gradient(90deg,rgba(200,61,255,0.5),var(--neon4));}
+.fill-o{background:linear-gradient(90deg,rgba(255,200,68,0.5),var(--gold));}
+.score-num{font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;color:var(--text);width:30px;text-align:right;flex-shrink:0;}
+.ring-wrap{display:flex;align-items:center;gap:14px;}
+.ring-pct{font-family:'Chakra Petch',sans-serif;font-size:22px;font-weight:700;color:var(--neon3);line-height:1;text-shadow:0 0 18px rgba(57,255,133,0.6);}
+.ring-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--text3);margin-top:2px;}
+.ring-note{font-size:11px;color:var(--text);margin-top:5px;line-height:1.5;}
+.mkt-val{font-family:'Chakra Petch',sans-serif;font-size:22px;font-weight:700;color:var(--neon);margin-bottom:6px;text-shadow:0 0 18px rgba(0,238,255,0.5);}
+.mkt-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text3);margin-bottom:8px;letter-spacing:2px;}
+.tags{display:flex;flex-wrap:wrap;gap:4px;}
+.tag{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1px;padding:3px 8px;border:1px solid;border-radius:1px;transition:transform 0.2s;}
+.tag:hover{transform:scale(1.05);}
+.tag-c{color:var(--neon);border-color:rgba(0,238,255,0.25);background:rgba(0,238,255,0.05);}
+.tag-p{color:var(--neon4);border-color:rgba(200,61,255,0.25);background:rgba(200,61,255,0.05);}
+.tag-g{color:var(--neon3);border-color:rgba(57,255,133,0.25);background:rgba(57,255,133,0.05);}
+.tag-o{color:var(--gold);border-color:rgba(255,200,68,0.25);background:rgba(255,200,68,0.05);}
+.prob-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;}
+.prob-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.prob-text{font-size:11px;line-height:1.6;color:var(--text);}
+.ver-list{display:flex;flex-direction:column;gap:6px;}
+.ver-item{display:flex;gap:8px;align-items:center;}
+.ver-tag2{font-family:'Share Tech Mono',monospace;font-size:9px;padding:2px 7px;border:1px solid;flex-shrink:0;border-radius:1px;}
+.ver-tag2.cur{color:var(--neon);border-color:rgba(0,238,255,0.4);background:rgba(0,238,255,0.06);text-shadow:0 0 8px rgba(0,238,255,0.4);}
+.ver-tag2.old{color:var(--text3);border-color:var(--border);}
+.ver-desc{font-size:11px;color:var(--text);}
+.ver-desc.old{color:var(--text3);}
+
+/* COPY TO NEW CHAT BUTTON */
+.msg-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.copy-btn{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:600;letter-spacing:1px;padding:4px 10px;cursor:pointer;transition:all 0.2s;background:transparent;border:1px solid var(--border);color:var(--text3);display:inline-flex;align-items:center;gap:5px;border-radius:1px;}
+.copy-btn:hover{border-color:rgba(0,238,255,0.4);color:var(--neon);box-shadow:0 0 10px rgba(0,238,255,0.15);}
+.copy-btn.copied{border-color:rgba(57,255,133,0.4);color:var(--neon3);box-shadow:0 0 10px rgba(57,255,133,0.2);}
+.newchat-btn{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:600;letter-spacing:1px;padding:4px 10px;cursor:pointer;transition:all 0.2s;background:rgba(200,61,255,0.06);border:1px solid rgba(200,61,255,0.25);color:var(--neon4);display:inline-flex;align-items:center;gap:5px;border-radius:1px;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);}
+.newchat-btn:hover{background:rgba(200,61,255,0.14);border-color:var(--neon4);box-shadow:var(--glow-p);}
+
+/* IDEAS PAGE */
+.ideas-page{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:14px;}
+.idea-card{background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid var(--border);padding:18px;position:relative;overflow:hidden;transition:all 0.25s;}
+.idea-card::before{content:'';position:absolute;inset:0;background:var(--shine);pointer-events:none;}
+.idea-card::after{content:'';position:absolute;top:0;left:0;width:14px;height:14px;border-top:2px solid var(--neon4);border-left:2px solid var(--neon4);opacity:0.6;}
+.idea-card:hover{border-color:rgba(200,61,255,0.35);box-shadow:0 6px 24px rgba(0,0,0,0.4),var(--glow-p);transform:translateY(-2px);}
+.idea-card.upgrade{border-left:3px solid var(--gold);}
+.idea-card.upgrade::after{border-top-color:var(--gold);border-left-color:var(--gold);}
+.idea-card.new-inv{border-left:3px solid var(--neon4);}
+.idea-type{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;margin-bottom:6px;}
+.idea-type.new{color:var(--neon4);}
+.idea-type.upgrade{color:var(--gold);}
+.idea-name{font-family:'Chakra Petch',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.idea-desc{font-size:12px;line-height:1.7;color:var(--text2);margin-bottom:10px;}
+.idea-actions{display:flex;gap:6px;}
+.idea-use-btn{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:600;letter-spacing:1px;padding:5px 12px;cursor:pointer;transition:all 0.2s;background:rgba(200,61,255,0.08);border:1px solid rgba(200,61,255,0.3);color:var(--neon4);clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);}
+.idea-use-btn:hover{background:rgba(200,61,255,0.18);box-shadow:var(--glow-p);}
+.idea-send-btn{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:600;letter-spacing:1px;padding:5px 12px;cursor:pointer;transition:all 0.2s;background:rgba(0,238,255,0.06);border:1px solid rgba(0,238,255,0.25);color:var(--neon);}
+.idea-send-btn:hover{background:rgba(0,238,255,0.14);box-shadow:var(--glow-c);}
+.ideas-empty{text-align:center;padding:80px 20px;color:var(--text3);font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:3px;line-height:2.2;}
+.ideas-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.ideas-count{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--neon4);text-shadow:0 0 10px rgba(200,61,255,0.5);}
+.ideas-filter{display:flex;gap:6px;}
+.filter-btn{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:600;letter-spacing:1px;padding:5px 12px;cursor:pointer;transition:all 0.2s;background:transparent;border:1px solid var(--border);color:var(--text3);}
+.filter-btn.active{border-color:rgba(200,61,255,0.4);color:var(--neon4);background:rgba(200,61,255,0.07);}
+.filter-btn:hover{border-color:var(--border2);color:var(--text2);}
+
+/* API NOTICE */
+.api-notice{background:linear-gradient(135deg,rgba(255,200,68,0.07),rgba(255,200,68,0.02));border-bottom:1px solid rgba(255,200,68,0.25);padding:10px 20px;flex-shrink:0;font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;color:var(--gold);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.api-notice.hidden{display:none;}
+.api-key-input{flex:1;min-width:200px;background:transparent;border:none;border-bottom:1px solid rgba(255,200,68,0.4);color:var(--gold);font-family:'Share Tech Mono',monospace;font-size:11px;padding:2px 6px;outline:none;}
+.api-key-input::placeholder{color:rgba(255,200,68,0.3);}
+.api-save-btn{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;padding:5px 14px;background:rgba(255,200,68,0.1);border:1px solid rgba(255,200,68,0.4);color:var(--gold);cursor:pointer;transition:all 0.2s;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);}
+.api-save-btn:hover{background:rgba(255,200,68,0.22);box-shadow:0 0 18px rgba(255,200,68,0.3);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(3,7,15,0.92);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
+.modal-overlay.hidden{display:none;}
+.modal{background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid rgba(0,238,255,0.3);padding:28px;width:500px;max-width:92vw;position:relative;box-shadow:var(--glow-c),0 30px 80px rgba(0,0,0,0.9);animation:modalin 0.3s cubic-bezier(0.34,1.2,0.64,1);}
+@keyframes modalin{from{opacity:0;transform:scale(0.88) translateY(24px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal::before{content:'';position:absolute;top:0;left:0;width:20px;height:20px;border-top:2px solid var(--neon);border-left:2px solid var(--neon);}
+.modal::after{content:'';position:absolute;bottom:0;right:0;width:20px;height:20px;border-bottom:2px solid var(--neon4);border-right:2px solid var(--neon4);}
+.modal-title{font-family:'Chakra Petch',sans-serif;font-size:15px;font-weight:700;letter-spacing:4px;color:var(--neon);margin-bottom:20px;text-shadow:0 0 18px rgba(0,238,255,0.6);}
+.modal-input{width:100%;background:linear-gradient(135deg,rgba(0,238,255,0.03),rgba(0,0,0,0.2));border:1px solid var(--border2);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;padding:11px 14px;outline:none;margin-bottom:10px;transition:all 0.2s;border-radius:1px;}
+.modal-input:focus{border-color:rgba(0,238,255,0.5);box-shadow:var(--glow-c),inset 0 0 15px rgba(0,238,255,0.03);}
+.modal-input::placeholder{color:var(--text3);}
+.modal-select{width:100%;background:linear-gradient(135deg,rgba(200,61,255,0.06),rgba(0,0,0,0.2));border:1px solid rgba(200,61,255,0.25);color:var(--text);font-family:'Chakra Petch',sans-serif;font-size:12px;font-weight:500;padding:11px 14px;outline:none;margin-bottom:10px;cursor:pointer;border-radius:1px;}
+.modal-select:focus{border-color:var(--neon4);}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
+.mbtn{font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;padding:10px 22px;cursor:pointer;transition:all 0.2s;border-radius:1px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);}
+.mbtn-cancel{background:transparent;border:1px solid var(--border2);color:var(--text2);}
+.mbtn-cancel:hover{border-color:var(--text2);color:var(--text);}
+.mbtn-create{background:linear-gradient(135deg,rgba(0,238,255,0.12),rgba(200,61,255,0.08));border:1px solid rgba(0,238,255,0.5);color:var(--neon);}
+.mbtn-create:hover{background:linear-gradient(135deg,rgba(0,238,255,0.25),rgba(200,61,255,0.15));box-shadow:var(--glow-c);}
+.mbtn:active{transform:scale(0.95);}
+
+/* DELETE MESSAGE BUTTON */
+.msg-delete-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:3px 6px;border-radius:2px;transition:all 0.2s;opacity:0;}
+.msg:hover .msg-delete-btn{opacity:1;}
+.msg-delete-btn:hover{color:var(--neon2);background:rgba(255,45,120,0.1);box-shadow:0 0 8px rgba(255,45,120,0.2);}
+
+/* CONFIRM MODAL */
+#confirmModal{position:fixed;inset:0;background:rgba(3,7,15,0.92);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
+#confirmModal.hidden{display:none;}
+.confirm-box{background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid rgba(255,45,120,0.4);padding:28px;width:420px;max-width:90vw;position:relative;box-shadow:var(--glow-r),0 30px 80px rgba(0,0,0,0.9);animation:modalin 0.3s cubic-bezier(0.34,1.2,0.64,1);}
+.confirm-box::before{content:'';position:absolute;top:0;left:0;width:20px;height:20px;border-top:2px solid var(--neon2);border-left:2px solid var(--neon2);}
+.confirm-box::after{content:'';position:absolute;bottom:0;right:0;width:20px;height:20px;border-bottom:2px solid var(--neon2);border-right:2px solid var(--neon2);}
+.confirm-icon{font-size:32px;text-align:center;margin-bottom:12px;}
+.confirm-title{font-family:'Chakra Petch',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;color:var(--neon2);margin-bottom:10px;text-align:center;text-shadow:0 0 14px rgba(255,45,120,0.6);}
+.confirm-msg{font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--text2);text-align:center;margin-bottom:20px;line-height:1.6;}
+.confirm-actions{display:flex;gap:8px;justify-content:center;}
+.mbtn-delete{background:linear-gradient(135deg,rgba(255,45,120,0.15),rgba(255,45,120,0.08));border:1px solid rgba(255,45,120,0.5);color:var(--neon2);}
+.mbtn-delete:hover{background:linear-gradient(135deg,rgba(255,45,120,0.3),rgba(255,45,120,0.15));box-shadow:var(--glow-r);}
+
+/* CODE EDITOR */
+.code-editor-wrap{display:flex;flex:1;overflow:hidden;background:rgba(0,0,0,0.3);border:1px solid rgba(0,238,255,0.15);font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.6;}
+.code-line-numbers{padding:12px 10px;background:rgba(0,0,0,0.2);border-right:1px solid rgba(0,238,255,0.1);color:var(--text3);font-size:11px;line-height:1.6;text-align:right;user-select:none;min-width:44px;overflow:hidden;white-space:pre;}
+.code-textarea{flex:1;background:transparent;border:none;outline:none;color:var(--neon3);font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.6;padding:12px 14px;resize:none;overflow:auto;white-space:pre;tab-size:2;caret-color:var(--neon);}
+.code-textarea::selection{background:rgba(0,238,255,0.2);}
+.code-editor-header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:linear-gradient(135deg,var(--metal2),var(--metal3));border-bottom:1px solid var(--border2);}
+.code-editor-title{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:var(--neon);text-shadow:0 0 10px rgba(0,238,255,0.4);}
+.code-editor-info{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);}
+.code-save-btn{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:600;letter-spacing:1px;padding:4px 12px;background:rgba(57,255,133,0.08);border:1px solid rgba(57,255,133,0.3);color:var(--neon3);cursor:pointer;transition:all 0.2s;}
+.code-save-btn:hover{background:rgba(57,255,133,0.18);box-shadow:var(--glow-g);}
+
+@media(max-width:1000px){.dash-grid{grid-template-columns:repeat(2,1fr);}.dash-inv-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:700px){.sidebar{width:200px;}.rpanel{width:220px;}.viz-page{grid-template-columns:1fr;}.viz-panel.full{grid-column:1;}}
+
+/* PASSWORD LOCK */
+#lockscreen{position:fixed;inset:0;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;}
+#lockscreen.unlocked{display:none;}
+.lock-box{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px;background:#000;border:1px solid rgba(0,238,255,0.2);box-shadow:0 0 60px rgba(0,238,255,0.08);max-width:340px;width:90%;}
+.lock-icon{font-size:36px;}
+.lock-title{font-family:'Chakra Petch',sans-serif;font-size:18px;font-weight:700;letter-spacing:6px;background:linear-gradient(90deg,#00eeff,#c83dff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.lock-sub{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:#2a4a68;text-align:center;}
+.lock-input{width:100%;background:#000;border:none;border-bottom:2px solid rgba(0,238,255,0.35);color:#00eeff;font-family:'Share Tech Mono',monospace;font-size:16px;padding:12px 16px;outline:none;text-align:center;letter-spacing:6px;transition:all 0.2s;}
+.lock-input:focus{border-bottom-color:#00eeff;box-shadow:0 4px 20px rgba(0,238,255,0.1);}
+.lock-input::placeholder{color:#1a3040;letter-spacing:2px;font-size:11px;}
+.lock-btn{width:100%;font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;padding:13px;cursor:pointer;background:linear-gradient(135deg,rgba(0,238,255,0.1),rgba(200,61,255,0.07));border:1px solid rgba(0,238,255,0.4);color:#00eeff;transition:all 0.25s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}
+.lock-btn:hover{background:linear-gradient(135deg,rgba(0,238,255,0.22),rgba(200,61,255,0.15));box-shadow:0 0 30px rgba(0,238,255,0.25);}
+.lock-error{font-family:'Share Tech Mono',monospace;font-size:10px;color:#ff2d78;letter-spacing:2px;text-align:center;opacity:0;transition:opacity 0.3s;height:16px;}
+.lock-error.show{opacity:1;}
 </style>
 </head>
 <body>
-<div class="frame">
+
+<!-- FULL BLACK LOCK SCREEN — nobody sees anything without password -->
+<div id="lockscreen">
+  <div class="lock-box">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">INVENTAI</div>
+    <div class="lock-sub">AUTHORIZED ACCESS ONLY</div>
+    <input class="lock-input" id="lockInput" type="password" placeholder="ENTER PASSWORD" onkeydown="if(event.key==='Enter')checkPassword()" autocomplete="off"/>
+    <button class="lock-btn" onclick="checkPassword()">UNLOCK →</button>
+    <div class="lock-error" id="lockError">⚠ ACCESS DENIED</div>
+  </div>
+</div>
+<script>
+const APP_PASSWORD='inventai2026';
+function checkPassword(){const v=document.getElementById('lockInput').value;if(v===APP_PASSWORD){document.getElementById('lockscreen').classList.add('unlocked');sessionStorage.setItem('inv_auth','1');}else{const e=document.getElementById('lockError');e.classList.add('show');document.getElementById('lockInput').value='';setTimeout(()=>e.classList.remove('show'),2000);}}
+if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen').classList.add('unlocked');
+</script>
+<div class="scanline"></div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div id="confirmModal" class="modal-overlay hidden">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-title">CONFIRM DELETE</div>
+    <div class="confirm-msg" id="confirmMsg">Are you sure?</div>
+    <div class="confirm-actions">
+      <button class="mbtn mbtn-cancel" onclick="closeConfirm()">CANCEL</button>
+      <button class="mbtn mbtn-delete" id="confirmYesBtn">🗑 DELETE</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="newModal">
+  <div class="modal">
+    <div class="modal-title">⬡ NEW INVENTION</div>
+    <input class="modal-input" id="newInvName" placeholder="Invention name..." />
+    <select class="modal-select" id="newInvCat">
+      <option value="🔧 CNC MACHINING">🔧 CNC Machining</option>
+      <option value="🖨️ 3D PRINTING">🖨️ 3D Printing</option>
+      <option value="🔌 PCB / ELECTRONICS">🔌 PCB / Electronics</option>
+      <option value="🤖 ROBOTICS">🤖 Robotics</option>
+      <option value="⚙️ MECHANICAL">⚙️ Mechanical Engineering</option>
+      <option value="💊 BIOMEDICAL">💊 Biomedical Devices</option>
+      <option value="🚀 AEROSPACE">🚀 Aerospace Components</option>
+      <option value="🔋 ENERGY SYSTEMS">🔋 Energy Systems</option>
+      <option value="🏗️ STRUCTURAL">🏗️ Structural Engineering</option>
+      <option value="💻 SOFTWARE">💻 Software / Firmware</option>
+    </select>
+    <textarea class="modal-input" id="newInvGoal" placeholder="What are you trying to invent? Describe the purpose and goal..." rows="3"></textarea>
+    <div class="modal-actions">
+      <button class="mbtn mbtn-cancel" onclick="closeModal()">CANCEL</button>
+      <button class="mbtn mbtn-create" onclick="createInvention()">CREATE →</button>
+    </div>
+  </div>
+</div>
 
 <header>
-  <div class="brand"><span class="hex">⬡</span>INVENTAI<span class="div">/</span>COUNCIL</div>
-  <div class="sub">three-agent improvement loop · inventor → researcher → critic → refinement</div>
+  <div class="logo">
+    <div class="logo-hex">
+      <svg viewBox="0 0 42 42" fill="none">
+        <polygon points="21,2 39,11.5 39,30.5 21,40 3,30.5 3,11.5" stroke="#00eeff" stroke-width="1.5" fill="none" opacity="0.6"/>
+        <polygon points="21,8 33,14.5 33,27.5 21,34 9,27.5 9,14.5" stroke="#c83dff" stroke-width="1" fill="none" opacity="0.4"/>
+        <circle cx="21" cy="21" r="6" fill="none" stroke="#00eeff" stroke-width="1.5" opacity="0.8"/>
+        <circle cx="21" cy="21" r="3" fill="#c83dff" opacity="0.9"/>
+        <circle cx="21" cy="21" r="1.5" fill="#00eeff"/>
+        <line x1="21" y1="2" x2="21" y2="8" stroke="#00eeff" stroke-width="1.5" opacity="0.7"/>
+        <line x1="39" y1="11.5" x2="33" y2="14.5" stroke="#00eeff" stroke-width="1.5" opacity="0.7"/>
+        <line x1="39" y1="30.5" x2="33" y2="27.5" stroke="#00eeff" stroke-width="1.5" opacity="0.7"/>
+        <line x1="21" y1="40" x2="21" y2="34" stroke="#00eeff" stroke-width="1.5" opacity="0.7"/>
+        <line x1="3" y1="30.5" x2="9" y2="27.5" stroke="#00eeff" stroke-width="1.5" opacity="0.7"/>
+        <line x1="3" y1="11.5" x2="9" y2="14.5" stroke="#00eeff" stroke-width="1.5" opacity="0.7"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-name">INVENTAI</div>
+      <div class="logo-tagline">INVENTION INTELLIGENCE PLATFORM · OPUS 4.6</div>
+    </div>
+  </div>
+  <div class="api-status">
+    <div class="status-dot online" id="statusDot"></div>
+    <span class="status-text online" id="statusText">OPUS 4.6 · READY</span>
+  </div>
+  <div class="header-right">
+    <button class="hbtn hbtn-outline" onclick="changeApiKey()" title="Change API Key">🔑 API KEY</button>
+    <button class="hbtn hbtn-outline" onclick="exportPDF()">↗ EXPORT</button>
+    <button class="hbtn hbtn-primary" onclick="openModal()">+ NEW INVENTION</button>
+  </div>
 </header>
 
-<section class="config">
-  <div class="row split">
-    <div>
-      <label>Anthropic API Key</label>
-      <input type="password" id="apiKey" placeholder="sk-ant-...">
+<nav>
+  <div class="navtab active" onclick="switchPage('chat')" id="tab-chat">💬 CHAT</div>
+  <div class="navtab" onclick="switchPage('blueprint')" id="tab-blueprint">📐 BLUEPRINT</div>
+  <div class="navtab" onclick="switchPage('manual')" id="tab-manual">📖 MANUAL</div>
+  <div class="navtab" onclick="switchPage('viz')" id="tab-viz">🖼️ VISUALIZATION</div>
+  <div class="navtab" onclick="switchPage('dashboard')" id="tab-dashboard">📊 DASHBOARD</div>
+  <div class="navtab" onclick="switchPage('ideas')" id="tab-ideas">💡 AI IDEAS <span id="ideasBadge" style="display:none;font-size:8px;padding:1px 5px;background:rgba(200,61,255,0.2);border:1px solid rgba(200,61,255,0.4);color:var(--neon4);margin-left:2px;">0</span></div>
+  <div class="navtab" onclick="switchPage('coding')" id="tab-coding">💻 CODING</div>
+  <div class="navtab" onclick="switchPage('research')" id="tab-research">📡 RESEARCH</div>
+</nav>
+
+<div class="app-body">
+  <div class="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-title">INVENTIONS</span>
+      <span class="sidebar-count" id="invCount">0</span>
     </div>
-    <div>
-      <label>Model</label>
-      <select id="model">
-        <option value="claude-sonnet-4-6">Sonnet 4.6 — faster, cheaper</option>
-        <option value="claude-opus-4-6">Opus 4.6 — smarter, slower</option>
-      </select>
+    <div class="inv-list" id="invList"></div>
+    <div class="new-inv-btn" onclick="openModal()">+ NEW INVENTION</div>
+  </div>
+
+  <div class="center">
+    <div class="api-notice" id="apiNotice">
+      ⚠ &nbsp;ENTER YOUR ANTHROPIC API KEY TO ACTIVATE AI:
+      <input class="api-key-input" id="apiKeyInput" type="password" placeholder="sk-ant-..." />
+      <button class="api-save-btn" onclick="saveApiKey()">ACTIVATE</button>
+    </div>
+
+    <div class="page active" id="page-chat">
+      <div class="chat-toolbar">
+        <div class="inv-title-display">
+          <span id="currentInvTitle">SELECT OR CREATE AN INVENTION</span>
+          <span class="ver-tag" id="currentVerTag">v1</span>
+        </div>
+        <div class="toolbar-actions">
+          <select class="mfg-select" id="mfgSelect">
+            <option>🔧 CNC MACHINING</option><option>🖨️ 3D PRINTING</option>
+            <option>🔌 PCB / ELECTRONICS</option><option>🤖 ROBOTICS</option>
+            <option>⚙️ MECHANICAL ENG.</option><option>💊 BIOMEDICAL</option>
+            <option>🚀 AEROSPACE</option><option>🔋 ENERGY SYSTEMS</option>
+            <option>🏗️ STRUCTURAL ENG.</option><option>💻 SOFTWARE / FIRMWARE</option>
+          </select>
+          <button class="tbtn" onclick="runPriorArt()">🔍 PRIOR ART</button>
+          <button class="tbtn" onclick="generateIdeas()">⚡ AUTO-INVENT</button>
+          <button class="tbtn active-btn" onclick="generateAll()">▶ GENERATE ALL</button>
+        </div>
+      </div>
+      <div class="messages" id="messages">
+        <div class="msg">
+          <div class="msg-av system">⬡</div>
+          <div class="msg-body">
+            <div class="msg-meta system">INVENTAI SYSTEM <span class="msg-time">READY</span></div>
+            <div class="msg-bubble system">Welcome to <span class="hl">INVENTAI</span> — your professional invention intelligence platform powered by <span class="hl2">Claude Opus 4.6</span>.<br><br>Create a new invention or select one from the sidebar. Provide URLs, images, raw data, and descriptions — the AI will analyze everything and help you develop groundbreaking inventions.<br><br><span class="hl2">Capabilities:</span> Prior art search · Feasibility analysis · Blueprint generation · Patent readiness · Market analysis · Competitor analysis · Auto-invention.</div>
+          </div>
+        </div>
+      </div>
+      <div class="input-zone">
+        <div class="attach-row">
+          <button class="abtn" onclick="attachURL()">🔗 PASTE URL</button>
+          <button class="abtn" onclick="attachImage()">🖼️ ADD IMAGE</button>
+          <button class="abtn" onclick="attachData()">📊 RAW DATA</button>
+          <button class="abtn" onclick="toggleMic()">🎤 VOICE</button>
+        </div>
+        <div class="input-row">
+          <textarea class="main-input" id="mainInput" placeholder="Describe your invention idea, paste a URL, ask a question, or provide reference material..." rows="2" onkeydown="handleKey(event)"></textarea>
+          <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎤</button>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">SEND ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-blueprint">
+      <div class="bp-page" id="blueprintContent">
+        <div class="bp-empty">📐 NO BLUEPRINT YET<br><br>Generate from Chat using GENERATE ALL<br>or ask the AI to create a blueprint.</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-manual">
+      <div class="manual-page" id="manualContent">
+        <div class="bp-empty">📖 NO MANUAL YET<br><br>Generate from Chat using GENERATE ALL<br>or ask the AI to write a step-by-step manual.</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-viz">
+      <div class="viz-page" id="vizContent">
+        <div class="viz-panel full">
+          <div class="viz-title">INVENTION VISUALIZATION</div>
+          <div class="viz-placeholder"><div style="font-size:42px;opacity:0.15;">🖼️</div><div class="viz-placeholder-text">NO VISUALIZATION YET<br>GENERATE FROM CHAT PAGE</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-dashboard">
+      <div class="dashboard" id="dashboardContent">
+        <div class="dash-grid" id="dashMetrics">
+          <div class="dash-metric cyan"><div class="dash-metric-val" id="dmTotal">0</div><div class="dash-metric-label">TOTAL INVENTIONS</div></div>
+          <div class="dash-metric green"><div class="dash-metric-val" id="dmAvgFeas">—</div><div class="dash-metric-label">AVG FEASIBILITY</div></div>
+          <div class="dash-metric purple"><div class="dash-metric-val" id="dmPatent">—</div><div class="dash-metric-label">PATENT READY</div></div>
+          <div class="dash-metric orange"><div class="dash-metric-val" id="dmVersions">0</div><div class="dash-metric-label">TOTAL VERSIONS</div></div>
+        </div>
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;letter-spacing:4px;color:var(--text3);margin-top:4px;">ALL INVENTIONS</div>
+        <div class="dash-inv-grid" id="dashInvGrid">
+          <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text3);font-family:'Chakra Petch',sans-serif;font-size:11px;letter-spacing:3px;line-height:2.2;">NO INVENTIONS YET<br>CREATE YOUR FIRST ONE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IDEAS PAGE -->
+    <div class="page" id="page-ideas">
+        <div class="ideas-header">
+          <div>
+            <div style="font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--neon4);text-shadow:0 0 12px rgba(200,61,255,0.5);">💡 AI-GENERATED IDEAS</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);margin-top:4px;letter-spacing:1px;">New inventions & upgrades the AI discovered along the way</div>
+          </div>
+          <div class="ideas-filter">
+            <button class="filter-btn active" onclick="filterIdeas('all',this)">ALL</button>
+            <button class="filter-btn" onclick="filterIdeas('new',this)">NEW INVENTIONS</button>
+            <button class="filter-btn" onclick="filterIdeas('upgrade',this)">UPGRADES</button>
+          </div>
+        </div>
+        <div id="ideasList"><div class="ideas-empty">💡 NO IDEAS YET<br><br>As you chat with the AI, it will automatically<br>detect and list new invention ideas and upgrades here.</div></div>
+      </div>
+    </div>
+
+    <!-- CODING PAGE -->
+    <div class="page" id="page-coding" style="flex-direction:column;">
+      <div id="codingContent" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="bp-empty">💻 NO CODE YET<br><br>Click GENERATE CODE or ask the AI in the Chat page<br>to write code for your invention.</div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border2);background:linear-gradient(135deg,var(--metal1),var(--metal2));display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;">
+        <button class="tbtn active-btn" onclick="generateCode()">💻 GENERATE CODE</button>
+        <button class="tbtn" onclick="switchPage('chat');setTimeout(()=>askFollowup('Generate the complete code for this invention including all modules, functions and implementation'),100)">⚡ FULL CODE</button>
+        <button class="tbtn" onclick="switchPage('chat');setTimeout(()=>askFollowup('Generate the API structure and endpoints for this invention'),100)">🔌 API STRUCTURE</button>
+        <button class="tbtn" onclick="switchPage('chat');setTimeout(()=>askFollowup('Generate the database schema for this invention'),100)">🗄️ DATABASE</button>
+        <button class="tbtn" onclick="copyCode()">📋 COPY ALL CODE</button>
+        <button class="tbtn" style="border-color:rgba(57,255,133,0.4);color:var(--neon3);background:rgba(57,255,133,0.06);" onclick="openPastePanel()">📥 PASTE CODE FROM CHAT</button>
+      </div>
+      <!-- PASTE PANEL -->
+      <div id="pastePanel" style="display:none;padding:14px 20px;border-top:1px solid var(--border2);background:rgba(57,255,133,0.03);flex-shrink:0;">
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;letter-spacing:2px;color:var(--neon3);margin-bottom:8px;">📥 PASTE CODE HERE — WILL BE ADDED BELOW EXISTING CODE</div>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <textarea id="pasteCodeInput" style="flex:1;background:rgba(57,255,133,0.03);border:1px solid rgba(57,255,133,0.25);border-top:2px solid rgba(57,255,133,0.4);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;padding:10px 14px;resize:none;outline:none;min-height:80px;" placeholder="Paste code from chat here..."></textarea>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button class="tbtn" style="border-color:rgba(57,255,133,0.4);color:var(--neon3);" onclick="pasteCodeToPage()">✅ ADD</button>
+            <button class="tbtn" onclick="closePastePanel()">✕ CANCEL</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESEARCH PAGE -->
+    <div class="page" id="page-research">
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border2);background:linear-gradient(135deg,var(--metal1),var(--metal2));display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;flex-shrink:0;">
+        <div>
+          <div style="font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--neon);text-shadow:0 0 12px rgba(0,238,255,0.5);">📡 AUTOMATIC RESEARCH INTELLIGENCE</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px;letter-spacing:1px;">AI searches all databases automatically for your invention</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span id="researchStatus" style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);"></span>
+          <button class="tbtn active-btn" onclick="runResearch()">🔄 REFRESH RESEARCH</button>
+          <button class="tbtn" onclick="runResearchAll()">⚡ RESEARCH ALL INVENTIONS</button>
+          <button class="tbtn" style="border-color:rgba(57,255,133,0.5);color:var(--neon3);background:rgba(57,255,133,0.08);" onclick="implementResearch()">🚀 IMPLEMENT RESEARCH</button>
+        </div>
+      </div>
+      <div style="flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:16px;" id="researchContent">
+        <div class="bp-empty">📡 NO RESEARCH YET<br><br>Click REFRESH RESEARCH to automatically search all databases<br>for patents, papers, engineering research, market data and news<br>related to your current invention.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="rpanel">
+    <div class="rp-section">
+      <div class="rp-title">ANALYSIS SCORES</div>
+      <div class="score-row"><div class="score-lbl">FEASIBILITY</div><div class="score-bar"><div class="score-fill fill-c" id="sf-feas" style="width:0%"></div></div><div class="score-num" id="sn-feas">—</div></div>
+      <div class="score-row"><div class="score-lbl">MARKET FIT</div><div class="score-bar"><div class="score-fill fill-g" id="sf-mkt" style="width:0%"></div></div><div class="score-num" id="sn-mkt">—</div></div>
+      <div class="score-row"><div class="score-lbl">NOVELTY</div><div class="score-bar"><div class="score-fill fill-p" id="sf-nov" style="width:0%"></div></div><div class="score-num" id="sn-nov">—</div></div>
+      <div class="score-row"><div class="score-lbl">BUILD COST</div><div class="score-bar"><div class="score-fill fill-o" id="sf-cost" style="width:0%"></div></div><div class="score-num" id="sn-cost">—</div></div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-title">PATENT READINESS</div>
+      <div class="ring-wrap">
+        <svg width="58" height="58" viewBox="0 0 58 58">
+          <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#39ff85"/><stop offset="100%" stop-color="#00eeff"/></linearGradient></defs>
+          <circle cx="29" cy="29" r="23" fill="none" stroke="rgba(57,255,133,0.08)" stroke-width="6"/>
+          <circle cx="29" cy="29" r="23" fill="none" stroke="url(#rg)" stroke-width="6" stroke-dasharray="144.5" id="patentRing" stroke-dashoffset="144.5" stroke-linecap="round" transform="rotate(-90 29 29)" style="transition:stroke-dashoffset 1.2s cubic-bezier(0.34,1.2,0.64,1);filter:drop-shadow(0 0 6px rgba(57,255,133,0.7));"/>
+        </svg>
+        <div><div class="ring-pct" id="patentPct">—</div><div class="ring-lbl">PATENT READY</div><div class="ring-note" id="patentNote">Waiting for analysis...</div></div>
+      </div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-title">MARKET ANALYSIS</div>
+      <div class="mkt-val" id="mktVal">—</div>
+      <div class="mkt-sub">TOTAL ADDRESSABLE MARKET</div>
+      <div class="tags" id="mktTags"></div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-title">DETECTED ISSUES</div>
+      <div id="problemsList"><div style="font-size:11px;color:var(--text3);">No issues detected yet.</div></div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-title">VERSION HISTORY</div>
+      <div class="ver-list" id="verList"><div style="font-size:11px;color:var(--text3);">No versions yet.</div></div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-title">PATENT DATABASES</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <a href="https://patents.google.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🔍 GOOGLE PATENTS</a>
+        <a href="https://www.uspto.gov/patents/search" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🇺🇸 USPTO — US PATENTS</a>
+        <a href="https://worldwide.espacenet.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🇪🇺 ESPACENET — EU PATENTS</a>
+        <a href="https://www.wipo.int/patentscope" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🌍 WIPO — GLOBAL PATENTS</a>
+        <a href="https://patft.uspto.gov" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">📋 USPTO FULL TEXT</a>
+        <a href="https://www.lens.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🔭 LENS.ORG — FREE PATENTS</a>
+        <a href="https://patents.justia.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">⚖️ JUSTIA PATENTS</a>
+        <a href="https://scholar.google.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">📚 GOOGLE SCHOLAR</a>
+        <a href="https://arxiv.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">🔬 ARXIV — AI RESEARCH</a>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title">KEYWORDS</div>
+      <div class="tags" id="keywordTags"><div style="font-size:11px;color:var(--text3);">Generated after analysis.</div></div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title"># STUDIES</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <a href="https://www.ncbi.nlm.nih.gov/pmc" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(200,61,255,0.05);border:1px solid rgba(200,61,255,0.2);color:var(--neon4);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,61,255,0.12)';this.style.boxShadow='var(--glow-p)'" onmouseout="this.style.background='rgba(200,61,255,0.05)';this.style.boxShadow='none'">🧬 PUBMED CENTRAL — FREE STUDIES</a>
+        <a href="https://www.semanticscholar.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(200,61,255,0.05);border:1px solid rgba(200,61,255,0.2);color:var(--neon4);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,61,255,0.12)';this.style.boxShadow='var(--glow-p)'" onmouseout="this.style.background='rgba(200,61,255,0.05)';this.style.boxShadow='none'">🧠 SEMANTIC SCHOLAR</a>
+        <a href="https://clinicaltrials.gov" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(200,61,255,0.05);border:1px solid rgba(200,61,255,0.2);color:var(--neon4);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,61,255,0.12)';this.style.boxShadow='var(--glow-p)'" onmouseout="this.style.background='rgba(200,61,255,0.05)';this.style.boxShadow='none'">💊 CLINICAL TRIALS</a>
+        <a href="https://www.sciencedirect.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(200,61,255,0.05);border:1px solid rgba(200,61,255,0.2);color:var(--neon4);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,61,255,0.12)';this.style.boxShadow='var(--glow-p)'" onmouseout="this.style.background='rgba(200,61,255,0.05)';this.style.boxShadow='none'">📖 SCIENCE DIRECT</a>
+        <a href="https://www.jstor.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(200,61,255,0.05);border:1px solid rgba(200,61,255,0.2);color:var(--neon4);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,61,255,0.12)';this.style.boxShadow='var(--glow-p)'" onmouseout="this.style.background='rgba(200,61,255,0.05)';this.style.boxShadow='none'">📚 JSTOR</a>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title"># RESEARCH PAPERS</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <a href="https://arxiv.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🔬 ARXIV — AI & SCIENCE</a>
+        <a href="https://scholar.google.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">📚 GOOGLE SCHOLAR</a>
+        <a href="https://www.researchgate.net" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🔗 RESEARCH GATE</a>
+        <a href="https://paperswithcode.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">💻 PAPERS WITH CODE</a>
+        <a href="https://www.nature.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🌿 NATURE JOURNAL</a>
+        <a href="https://www.science.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">⚗️ SCIENCE JOURNAL</a>
+        <a href="https://openalex.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🌐 OPEN ALEX — FREE PAPERS</a>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title"># ENGINEERING RESEARCH</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <a href="https://ieeexplore.ieee.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">⚡ IEEE XPLORE</a>
+        <a href="https://www.asme.org/publications-submissions/journals" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">⚙️ ASME — MECHANICAL ENG</a>
+        <a href="https://ntrs.nasa.gov" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">🚀 NASA TECHNICAL REPORTS</a>
+        <a href="https://www.osti.gov" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">⚛️ US DEPT OF ENERGY R&D</a>
+        <a href="https://www.engineeringvillage.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">🏗️ ENGINEERING VILLAGE</a>
+        <a href="https://www.thingiverse.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">🖨️ THINGIVERSE — 3D DESIGNS</a>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title"># RAW DATA</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <a href="https://data.gov" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,200,68,0.05);border:1px solid rgba(255,200,68,0.2);color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,200,68,0.12)';this.style.boxShadow='0 0 12px rgba(255,200,68,0.3)'" onmouseout="this.style.background='rgba(255,200,68,0.05)';this.style.boxShadow='none'">🇺🇸 DATA.GOV — US OPEN DATA</a>
+        <a href="https://www.kaggle.com/datasets" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,200,68,0.05);border:1px solid rgba(255,200,68,0.2);color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,200,68,0.12)';this.style.boxShadow='0 0 12px rgba(255,200,68,0.3)'" onmouseout="this.style.background='rgba(255,200,68,0.05)';this.style.boxShadow='none'">📊 KAGGLE DATASETS</a>
+        <a href="https://datasetsearch.research.google.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,200,68,0.05);border:1px solid rgba(255,200,68,0.2);color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,200,68,0.12)';this.style.boxShadow='0 0 12px rgba(255,200,68,0.3)'" onmouseout="this.style.background='rgba(255,200,68,0.05)';this.style.boxShadow='none'">🔍 GOOGLE DATASET SEARCH</a>
+        <a href="https://huggingface.co/datasets" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,200,68,0.05);border:1px solid rgba(255,200,68,0.2);color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,200,68,0.12)';this.style.boxShadow='0 0 12px rgba(255,200,68,0.3)'" onmouseout="this.style.background='rgba(255,200,68,0.05)';this.style.boxShadow='none'">🤗 HUGGING FACE DATASETS</a>
+        <a href="https://www.statista.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,200,68,0.05);border:1px solid rgba(255,200,68,0.2);color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,200,68,0.12)';this.style.boxShadow='0 0 12px rgba(255,200,68,0.3)'" onmouseout="this.style.background='rgba(255,200,68,0.05)';this.style.boxShadow='none'">📈 STATISTA — MARKET DATA</a>
+        <a href="https://zenodo.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,200,68,0.05);border:1px solid rgba(255,200,68,0.2);color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,200,68,0.12)';this.style.boxShadow='0 0 12px rgba(255,200,68,0.3)'" onmouseout="this.style.background='rgba(255,200,68,0.05)';this.style.boxShadow='none'">🗄️ ZENODO — OPEN DATA</a>
+        <a href="https://www.worldbank.org/en/research" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,200,68,0.05);border:1px solid rgba(255,200,68,0.2);color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,200,68,0.12)';this.style.boxShadow='0 0 12px rgba(255,200,68,0.3)'" onmouseout="this.style.background='rgba(255,200,68,0.05)';this.style.boxShadow='none'">🌍 WORLD BANK DATA</a>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title"># CONCEPTS & THEORY</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <a href="https://en.wikipedia.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,45,120,0.05);border:1px solid rgba(255,45,120,0.2);color:var(--neon2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,45,120,0.12)';this.style.boxShadow='var(--glow-r)'" onmouseout="this.style.background='rgba(255,45,120,0.05)';this.style.boxShadow='none'">📖 WIKIPEDIA</a>
+        <a href="https://www.britannica.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,45,120,0.05);border:1px solid rgba(255,45,120,0.2);color:var(--neon2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,45,120,0.12)';this.style.boxShadow='var(--glow-r)'" onmouseout="this.style.background='rgba(255,45,120,0.05)';this.style.boxShadow='none'">🎓 BRITANNICA</a>
+        <a href="https://plato.stanford.edu" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,45,120,0.05);border:1px solid rgba(255,45,120,0.2);color:var(--neon2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,45,120,0.12)';this.style.boxShadow='var(--glow-r)'" onmouseout="this.style.background='rgba(255,45,120,0.05)';this.style.boxShadow='none'">🏛️ STANFORD PHILOSOPHY</a>
+        <a href="https://www.wolframalpha.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,45,120,0.05);border:1px solid rgba(255,45,120,0.2);color:var(--neon2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,45,120,0.12)';this.style.boxShadow='var(--glow-r)'" onmouseout="this.style.background='rgba(255,45,120,0.05)';this.style.boxShadow='none'">🧮 WOLFRAM ALPHA — MATH</a>
+        <a href="https://mathworld.wolfram.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,45,120,0.05);border:1px solid rgba(255,45,120,0.2);color:var(--neon2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,45,120,0.12)';this.style.boxShadow='var(--glow-r)'" onmouseout="this.style.background='rgba(255,45,120,0.05)';this.style.boxShadow='none'">📐 MATH WORLD</a>
+        <a href="https://conceptually.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(255,45,120,0.05);border:1px solid rgba(255,45,120,0.2);color:var(--neon2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,45,120,0.12)';this.style.boxShadow='var(--glow-r)'" onmouseout="this.style.background='rgba(255,45,120,0.05)';this.style.boxShadow='none'">💡 CONCEPTUALLY</a>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title"># AI & TECH NEWS</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <a href="https://techcrunch.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">📱 TECHCRUNCH</a>
+        <a href="https://www.wired.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🔌 WIRED</a>
+        <a href="https://spectrum.ieee.org" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">⚡ IEEE SPECTRUM</a>
+        <a href="https://www.technologyreview.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🔭 MIT TECH REVIEW</a>
+        <a href="https://venturebeat.com/ai" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(0,238,255,0.05);border:1px solid rgba(0,238,255,0.2);color:var(--neon);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,238,255,0.12)';this.style.boxShadow='var(--glow-c)'" onmouseout="this.style.background='rgba(0,238,255,0.05)';this.style.boxShadow='none'">🤖 VENTUREBEAT AI</a>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title"># MARKET & BUSINESS</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <a href="https://www.crunchbase.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">💰 CRUNCHBASE — STARTUPS</a>
+        <a href="https://www.cbinsights.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">📊 CB INSIGHTS</a>
+        <a href="https://www.grandviewresearch.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">📈 GRAND VIEW RESEARCH</a>
+        <a href="https://www.sec.gov/edgar" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(57,255,133,0.05);border:1px solid rgba(57,255,133,0.2);color:var(--neon3);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(57,255,133,0.12)';this.style.boxShadow='var(--glow-g)'" onmouseout="this.style.background='rgba(57,255,133,0.05)';this.style.boxShadow='none'">🏛️ SEC EDGAR — FILINGS</a>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <div class="rp-title"># OPEN SOURCE & CODE</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <a href="https://github.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(200,61,255,0.05);border:1px solid rgba(200,61,255,0.2);color:var(--neon4);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,61,255,0.12)';this.style.boxShadow='var(--glow-p)'" onmouseout="this.style.background='rgba(200,61,255,0.05)';this.style.boxShadow='none'">💻 GITHUB</a>
+        <a href="https://huggingface.co" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(200,61,255,0.05);border:1px solid rgba(200,61,255,0.2);color:var(--neon4);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,61,255,0.12)';this.style.boxShadow='var(--glow-p)'" onmouseout="this.style.background='rgba(200,61,255,0.05)';this.style.boxShadow='none'">🤗 HUGGING FACE — AI MODELS</a>
+        <a href="https://stackoverflow.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(200,61,255,0.05);border:1px solid rgba(200,61,255,0.2);color:var(--neon4);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,61,255,0.12)';this.style.boxShadow='var(--glow-p)'" onmouseout="this.style.background='rgba(200,61,255,0.05)';this.style.boxShadow='none'">💬 STACK OVERFLOW</a>
+        <a href="https://www.instructables.com" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;background:rgba(200,61,255,0.05);border:1px solid rgba(200,61,255,0.2);color:var(--neon4);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,61,255,0.12)';this.style.boxShadow='var(--glow-p)'" onmouseout="this.style.background='rgba(200,61,255,0.05)';this.style.boxShadow='none'">🔧 INSTRUCTABLES — DIY</a>
+      </div>
     </div>
   </div>
-
-  <div class="row">
-    <label>Invention Description</label>
-    <textarea id="invention" placeholder="Describe your invention. Include the unique features that differentiate it from existing solutions.">INTENTION PREDICTION INTERFACE — a phone/wearable system that predicts what the user will do next and pre-prepares the action. Combines: behavioral tracking (app sequences, time of day, location), facial expression + micro-expression recognition, retinal/eye tracking, and a mentalism-inspired prediction layer (cold reading, Barnum effect, pre-cognition illusion mapped to algorithms). All processing on-device. Predictions are tiered by risk (passive/low/medium/high/critical) and high-risk actions require explicit user approval before execution.</textarea>
-  </div>
-
-  <div class="row">
-    <label>What do you want the council to improve?</label>
-    <input type="text" id="focus" placeholder="e.g. prediction accuracy, battery life, cold-start problem, privacy guarantees..." value="prediction accuracy in the first 7 days when there is little user data">
-  </div>
-
-  <div class="row">
-    <button class="run" id="runBtn">▶ CONVENE THE COUNCIL</button>
-  </div>
-</section>
-
-<section class="output" id="output"></section>
-
-<div class="actions hidden" id="actions">
-  <button id="againBtn">↻ NEW PROPOSAL</button>
-  <button id="exportBtn">↓ EXPORT TRANSCRIPT</button>
-</div>
-
-<div class="disclaimer">
-  <strong>API key handling:</strong> Your key is stored only in your browser's session memory and is sent directly to Anthropic's API. It is never logged or transmitted anywhere else. To use this page you need an Anthropic API key from <code>console.anthropic.com</code>. Each council run costs roughly $0.05–$0.30 depending on model.
-  <br><br>
-  <strong>How to read the output:</strong> Each council proceeds in 4 turns. The Inventor proposes one specific improvement. The Researcher fact-checks for prior art and feasibility. The Critic attacks every weak point. The Inventor returns with a refined version that addresses the critique.
-</div>
-
 </div>
 
 <script>
-const SYS_INVENTOR = `You are the INVENTOR agent in a three-agent invention improvement council.
+let apiKey=localStorage.getItem('inventai_key')||'';
+let inventions=JSON.parse(localStorage.getItem('inventai_inventions')||'[]');
+let currentInvId=null,isThinking=false,recognition=null,isRecording=false;
+function getCurrentInv(){return inventions.find(i=>i.id===currentInvId)||null;}
+function saveInventions(){localStorage.setItem('inventai_inventions',JSON.stringify(inventions));}
+window.onload=()=>{if(apiKey)document.getElementById('apiNotice').classList.add('hidden');renderInvList();renderDashboard();renderIdeas();updateIdeasBadge();if(inventions.length>0)selectInvention(inventions[0].id);};
+function saveApiKey(){const v=document.getElementById('apiKeyInput').value.trim();if(v.startsWith('sk-')){apiKey=v;localStorage.setItem('inventai_key',apiKey);document.getElementById('apiNotice').classList.add('hidden');addSystemMsg('✅ API key saved. INVENTAI is now fully operational.');}else alert('Please enter a valid Anthropic API key (starts with sk-ant-)');}
+function changeApiKey(){apiKey='';localStorage.removeItem('inventai_key');document.getElementById('apiNotice').classList.remove('hidden');document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyInput').focus();}function setStatus(thinking){isThinking=thinking;const dot=document.getElementById('statusDot'),txt=document.getElementById('statusText'),btn=document.getElementById('sendBtn');if(thinking){dot.className='status-dot thinking';txt.className='status-text thinking';txt.textContent='OPUS 4.6 · THINKING...';btn.disabled=true;}else{dot.className='status-dot online';txt.className='status-text online';txt.textContent='OPUS 4.6 · READY';btn.disabled=false;}}
+function switchPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');document.getElementById('tab-'+n).classList.add('active');if(n==='dashboard')renderDashboard();if(n==='ideas')renderIdeas();if(n==='coding'){const inv=getCurrentInv();if(inv)renderCoding(inv);}if(n==='research'){const inv=getCurrentInv();if(inv&&inv.research)renderResearch(inv);else if(inv)document.getElementById('researchContent').innerHTML='<div class="bp-empty">📡 NO RESEARCH YET<br><br>Click REFRESH RESEARCH to automatically search all databases<br>for patents, papers, engineering research, market data and news<br>related to your current invention.</div>';}}
+function openModal(){document.getElementById('newModal').classList.remove('hidden');document.getElementById('newInvName').focus();}
+function closeModal(){document.getElementById('newModal').classList.add('hidden');document.getElementById('newInvName').value='';document.getElementById('newInvGoal').value='';}
+function createInvention(){const name=document.getElementById('newInvName').value.trim(),cat=document.getElementById('newInvCat').value,goal=document.getElementById('newInvGoal').value.trim();if(!name){alert('Please enter an invention name.');return;}const inv={id:Date.now().toString(),name,cat,goal,created:new Date().toLocaleDateString(),version:1,messages:[],blueprint:null,manual:null,visualization:null,code:null,research:null,scores:{feasibility:0,market:0,novelty:0,cost:0},patent:0,patentNote:'Analysis pending...',marketVal:'—',marketTags:[],problems:[],keywords:[],versions:[{v:1,desc:'Initial concept'}]};inventions.unshift(inv);saveInventions();closeModal();renderInvList();selectInvention(inv.id);if(goal)setTimeout(()=>{document.getElementById('mainInput').value=goal;sendMessage();},300);// Auto-run research immediately
+setTimeout(()=>{if(apiKey)runResearch();else addSystemMsg('💡 TIP: Enter your API key and click REFRESH RESEARCH on the Research tab to get automatic research for this invention.');},1500);}
+function renderInvList(){const list=document.getElementById('invList');document.getElementById('invCount').textContent=inventions.length;if(!inventions.length){list.innerHTML='<div style="padding:20px;font-family:\'Chakra Petch\',sans-serif;font-size:9px;color:var(--text3);text-align:center;letter-spacing:3px;line-height:2.2;">NO INVENTIONS YET<br>CREATE YOUR FIRST</div>';return;}list.innerHTML=inventions.map(inv=>{const s=inv.patent,sc=s>=75?'score-hi':s>=50?'score-md':'score-lo';return`<div class="inv-card ${inv.id===currentInvId?'active':''}" onclick="selectInvention('${inv.id}')"><div class="inv-cat">${inv.cat}</div><div class="inv-name">${inv.name}</div><div class="inv-footer"><span class="inv-score ${sc}">${s>0?s+'%':'—'}</span><span class="inv-ver">v${inv.version}</span><span class="inv-date">${inv.created}</span><span onclick="event.stopPropagation();confirmDeleteInvention('${inv.id}')" style="margin-left:auto;font-size:11px;color:var(--text3);cursor:pointer;padding:2px 6px;border:1px solid transparent;transition:all 0.2s;" onmouseover="this.style.color='var(--neon2)';this.style.borderColor='rgba(255,45,120,0.4)'" onmouseout="this.style.color='var(--text3)';this.style.borderColor='transparent'" title="Delete invention">🗑</span></div></div>`;}).join('');}
 
-Your job: propose ONE specific, concrete improvement to the invention. Not a list — one improvement, deeply specified.
+// CONFIRM MODAL
+let confirmCallback=null;
+function showConfirm(msg,cb){document.getElementById('confirmMsg').textContent=msg;confirmCallback=cb;document.getElementById('confirmModal').classList.remove('hidden');document.getElementById('confirmYesBtn').onclick=()=>{closeConfirm();cb();};}
+function closeConfirm(){document.getElementById('confirmModal').classList.add('hidden');confirmCallback=null;}
 
-Rules:
-- Be specific. "Add machine learning" is bad. "Add a 2-week cold-start onboarding flow that asks the user 8 lifestyle questions and seeds the Bayesian priors" is good.
-- Explain WHY this improvement matters and what problem it solves.
-- Explain HOW it would integrate with the existing invention.
-- Be honest about complexity and tradeoffs.
-- Do NOT pad with marketing language. Engineers and patent examiners are reading this.
-- Keep it under 400 words.
+function confirmDeleteInvention(id){const inv=inventions.find(i=>i.id===id);if(!inv)return;showConfirm(`Delete "${inv.name}"? This cannot be undone.`,()=>{inventions=inventions.filter(i=>i.id!==id);saveInventions();if(currentInvId===id){currentInvId=null;document.getElementById('currentInvTitle').textContent='SELECT OR CREATE AN INVENTION';document.getElementById('messages').innerHTML='';if(inventions.length>0)selectInvention(inventions[0].id);}renderInvList();renderDashboard();});}
 
-If you are receiving feedback from the Researcher and Critic to refine an earlier proposal, address every issue they raised. If the proposal can't be saved, say so plainly and pivot to a different approach.`;
-
-const SYS_RESEARCHER = `You are the RESEARCHER agent in a three-agent invention improvement council.
-
-Your job: fact-check the Inventor's proposal. Find prior art. Assess technical feasibility. Identify what already exists.
-
-Rules:
-- Be specific about what already exists. Name companies, products, papers, or patents when you can.
-- Distinguish between "exists exactly" / "exists similarly" / "novel as far as I know".
-- Flag any technical claims that may be physically/computationally impossible on current hardware.
-- Estimate cost and timeline ranges for implementation.
-- Be honest about what you don't know — you cannot search the web in real time, so qualify your knowledge.
-- Keep it under 400 words.
-
-Your goal is not to kill the proposal — it's to ground it in reality.`;
-
-const SYS_CRITIC = `You are the CRITIC agent in a three-agent invention improvement council.
-
-Your job: find every reason this proposal might fail. You are deliberately adversarial — but constructive.
-
-Rules:
-- Attack the weak points. Edge cases. Failure modes. User experience problems. Privacy and safety concerns. Cost. Battery. Maintenance burden. Adoption friction. Regulatory issues.
-- Be specific. "It might not work" is useless. "Users in apartments share WiFi networks, so location inference will misfire when neighbors are home" is useful.
-- Rank your concerns from most to least serious.
-- Do NOT be cruel or dismissive. Your goal is to make the proposal stronger, not to win.
-- Keep it under 400 words.
-
-End with one sentence: "The single biggest risk is: [X]."`;
-
-const apiKeyInput = document.getElementById('apiKey');
-const modelInput = document.getElementById('model');
-const inventionInput = document.getElementById('invention');
-const focusInput = document.getElementById('focus');
-const runBtn = document.getElementById('runBtn');
-const output = document.getElementById('output');
-const actions = document.getElementById('actions');
-const exportBtn = document.getElementById('exportBtn');
-const againBtn = document.getElementById('againBtn');
-
-// Restore saved key for the session
-if (sessionStorage.getItem('ipi_key')) {
-  apiKeyInput.value = sessionStorage.getItem('ipi_key');
+function deleteMessage(msgId){const inv=getCurrentInv();if(!inv)return;showConfirm('Delete this message? This cannot be undone.',()=>{inv.messages=inv.messages.filter(m=>m.id!==msgId);saveInventions();const el=document.getElementById(msgId);if(el)el.remove();});}
+function selectInvention(id){currentInvId=id;renderInvList();const inv=getCurrentInv();if(!inv)return;document.getElementById('currentInvTitle').textContent=inv.name;document.getElementById('currentVerTag').textContent='v'+inv.version;renderMessages(inv);renderBlueprint(inv);renderManual(inv);renderVisualization(inv);renderCoding(inv);if(inv.research)renderResearch(inv);updateRightPanel(inv);}
+function renderMessages(inv){const c=document.getElementById('messages');if(!inv.messages.length){c.innerHTML=`<div class="msg"><div class="msg-av system">⬡</div><div class="msg-body"><div class="msg-meta system">INVENTAI SYSTEM</div><div class="msg-bubble system">Invention <span class="hl">"${inv.name}"</span> created in <span class="hl3">${inv.cat}</span>.<br><br>Describe your concept, paste URLs, or click <span class="hl2">AUTO-INVENT</span> to generate ideas automatically.</div></div></div>`;}else{c.innerHTML=inv.messages.map(m=>renderMsgHTML(m)).join('');}scrollToBottom();}
+function renderMsgHTML(m){
+  const ac=m.role==='ai'?'ai':m.role==='system'?'system':'user';
+  const al=m.role==='ai'?'AI':m.role==='system'?'⬡':'YOU';
+  const sl=m.role==='ai'?'INVENTAI · OPUS 4.6':m.role==='system'?'INVENTAI SYSTEM':'YOU';
+  const msgId=m.id||'msg-'+Math.random().toString(36).substr(2,9);
+  const actions = m.role==='ai' ? `<div class="msg-actions">
+    <button class="copy-btn" onclick="copyMsg('${msgId}',this)">📋 COPY</button>
+    <button class="newchat-btn" onclick="newChatFrom('${msgId}')">↗ NEW CHAT WITH THIS</button>
+    <button class="newchat-btn" style="border-color:rgba(57,255,133,0.4);color:var(--neon3);background:rgba(57,255,133,0.06);" onclick="sendToCode('${msgId}')">💻 ADD TO CODING PAGE</button>
+  </div>` : '';
+  return`<div class="msg" id="${msgId}" style="position:relative;"><button class="msg-delete-btn" onclick="deleteMessage('${msgId}')" title="Delete message">🗑</button><div class="msg-av ${ac}">${al}</div><div class="msg-body"><div class="msg-meta ${ac}">${sl} <span class="msg-time">${m.time||''}</span></div><div class="msg-bubble ${ac}" data-raw="${encodeURIComponent(m.content.replace(/<[^>]+>/g,''))}">${m.content}</div>${actions}</div></div>`;
 }
+function addMsg(role,content){const inv=getCurrentInv();if(!inv)return;const msgId='m'+Date.now();const m={role,content,time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),id:msgId};inv.messages.push(m);saveInventions();const c=document.getElementById('messages'),el=document.createElement('div');el.innerHTML=renderMsgHTML(m);c.appendChild(el.firstChild);scrollToBottom();}
+function addSystemMsg(t){addMsg('system',t);}
+function addThinking(){const c=document.getElementById('messages'),el=document.createElement('div');el.id='thinkingEl';el.className='msg';el.innerHTML=`<div class="msg-av ai">AI</div><div class="msg-body"><div class="msg-meta ai">INVENTAI · OPUS 4.6</div><div class="thinking-bubble"><div class="thinking-dots"><span></span><span></span><span></span></div><div class="thinking-text">ANALYZING & PROCESSING...</div></div></div>`;c.appendChild(el);scrollToBottom();}
+function removeThinking(){const el=document.getElementById('thinkingEl');if(el)el.remove();}
+function scrollToBottom(){const c=document.getElementById('messages');c.scrollTop=c.scrollHeight;}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+async function sendMessage(){const input=document.getElementById('mainInput'),text=input.value.trim();if(!text||isThinking)return;if(!currentInvId){alert('Please create or select an invention first.');return;}input.value='';addMsg('user',text);await callAI(text);}
+async function callAI(userMessage,systemOverride=null){if(!apiKey){addMsg('ai','⚠️ Please enter your Anthropic API key above to activate the AI.');return;}const inv=getCurrentInv();if(!inv)return;setStatus(true);addThinking();const history=inv.messages.slice(-12).filter(m=>m.role!=='system').map(m=>({role:m.role==='ai'?'assistant':'user',content:m.content.replace(/<[^>]+>/g,'')}));const sys=systemOverride||`You are INVENTAI, a world-class invention intelligence assistant powered by Claude Opus 4.6. Current invention: "${inv.name}" | Category: ${inv.cat} | Goal: ${inv.goal||'Not specified'} | Version: v${inv.version}. Be specific, technical, proactive. Always look for related invention opportunities the user has NOT thought of yet. After your response, ALWAYS end with this exact JSON:
+INVENTAI_DATA:{"feasibility":85,"market":90,"novelty":78,"cost":65,"patent":82,"patentNote":"Brief status","marketVal":"$2.3B","marketTags":["TAG1","TAG2","TAG3"],"problems":["Problem 1","Problem 2"],"keywords":["kw1","kw2","kw3","kw4"],"versionBump":false,"versionDesc":"","suggestedIdeas":[{"type":"new","name":"Invention Name","desc":"Brief description of this new invention idea you spotted","cat":"⚙️ MECHANICAL"},{"type":"upgrade","name":"Upgrade Name","desc":"Brief description of this upgrade or improvement idea","cat":"🔌 PCB / ELECTRONICS"}]}`;
+try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4000,system:sys,messages:[...history.slice(0,-1),{role:'user',content:userMessage}]})});const d=await r.json();removeThinking();if(d.error){addMsg('ai',`⚠️ API Error: ${d.error.type} — ${d.error.message}`);setStatus(false);return;}if(!d.content||!d.content[0]){addMsg('ai','⚠️ Empty response from AI. Please try again.');setStatus(false);return;}let ft=d.content[0].text,dt=ft,jd=null;const ji=ft.indexOf('INVENTAI_DATA:');if(ji!==-1){dt=ft.substring(0,ji).trim();try{jd=JSON.parse(ft.substring(ji+14).trim());}catch(e){}}dt=dt.replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>').replace(/`(.*?)`/g,'<span class="hl3">$1</span>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');const chips=`<div class="chips"><div class="chip" onclick="askFollowup('Generate the full blueprint for this invention')">→ BLUEPRINT</div><div class="chip" onclick="askFollowup('Write the complete step-by-step manual')">→ MANUAL</div><div class="chip" onclick="askFollowup('Run a prior art and patent search')">→ PRIOR ART</div><div class="chip" onclick="askFollowup('Identify all potential problems and solutions')">→ PROBLEMS</div><div class="chip" onclick="askFollowup('Full market analysis and competitor landscape')">→ MARKET</div></div>`;addMsg('ai',dt+chips);if(jd)updateScores(jd);setStatus(false);}catch(err){removeThinking();addMsg('ai',`⚠️ Connection error: ${err.message}. Check your API key and internet connection.`);setStatus(false);}}
+function askFollowup(t){document.getElementById('mainInput').value=t;sendMessage();}
 
-let transcript = [];
+// COPY & NEW CHAT
+function copyMsg(msgId,btn){const el=document.getElementById(msgId);if(!el)return;const bubble=el.querySelector('.msg-bubble');const raw=decodeURIComponent(bubble.getAttribute('data-raw')||'');navigator.clipboard.writeText(raw).then(()=>{btn.textContent='✅ COPIED!';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 COPY';btn.classList.remove('copied');},2000);});}
+function newChatFrom(msgId){const el=document.getElementById(msgId);if(!el)return;const bubble=el.querySelector('.msg-bubble');const raw=decodeURIComponent(bubble.getAttribute('data-raw')||'');const text='[Continuing from previous INVENTAI session]\n\n'+raw;navigator.clipboard.writeText(text).then(()=>{alert('✅ Answer copied! Open a new chat and paste it as the first message to continue from this point.');});}
 
-async function callClaude(systemPrompt, userMessage, apiKey, model) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: model,
-      max_tokens: 1500,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }]
-    })
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data?.error?.message || `HTTP ${res.status}`);
-  }
-  return data.content.map(b => b.text || '').join('\n').trim();
-}
+// IDEAS
+let allIdeas=JSON.parse(localStorage.getItem('inventai_ideas')||'[]');
+let ideasFilter='all';
+function saveIdeas(){localStorage.setItem('inventai_ideas',JSON.stringify(allIdeas));}
+function addIdeas(ideas){if(!ideas||!ideas.length)return;let added=0;ideas.forEach(idea=>{const exists=allIdeas.some(i=>i.name===idea.name);if(!exists){allIdeas.unshift({...idea,id:Date.now()+Math.random(),timestamp:new Date().toLocaleDateString(),invName:getCurrentInv()?.name||''});added++;}});if(added>0){saveIdeas();renderIdeas();updateIdeasBadge();}}
+function updateIdeasBadge(){const badge=document.getElementById('ideasBadge');badge.style.display=allIdeas.length>0?'inline':'none';badge.textContent=allIdeas.length;}
+function filterIdeas(f,btn){ideasFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderIdeas();}
+function renderIdeas(){const list=document.getElementById('ideasList');const filtered=ideasFilter==='all'?allIdeas:allIdeas.filter(i=>i.type===ideasFilter);if(!filtered.length){list.innerHTML=`<div class="ideas-empty">💡 NO ${ideasFilter==='all'?'':''+ideasFilter.toUpperCase()+' '}IDEAS YET<br><br>${ideasFilter==='all'?'As you chat with the AI, it will automatically detect and list new invention ideas and upgrades here.':'No ideas of this type yet. Keep chatting!'}</div>`;return;}list.innerHTML=filtered.map(idea=>`<div class="idea-card ${idea.type==='upgrade'?'upgrade':'new-inv'}"><div class="idea-type ${idea.type==='upgrade'?'upgrade':'new'}">${idea.type==='upgrade'?'⬆ UPGRADE IDEA':'✦ NEW INVENTION IDEA'}</div><div class="idea-name">${idea.name}</div><div class="idea-desc">${idea.desc}</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;"><span style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text3);">${idea.cat||''}</span><span style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text3);">· ${idea.timestamp}</span>${idea.invName?`<span style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text3);">· FROM: ${idea.invName}</span>`:''}</div><div class="idea-actions"><button class="idea-use-btn" onclick="createFromIdea('${encodeURIComponent(idea.name)}','${encodeURIComponent(idea.cat||'')}','${encodeURIComponent(idea.desc||'')}')">→ CREATE AS NEW INVENTION</button><button class="idea-send-btn" onclick="askAboutIdea('${encodeURIComponent(idea.name)}','${encodeURIComponent(idea.desc||'')}')">💬 ASK AI ABOUT THIS</button></div></div>`).join('');}
+function createFromIdea(name,cat,desc){document.getElementById('newInvName').value=decodeURIComponent(name);document.getElementById('newInvGoal').value=decodeURIComponent(desc);document.getElementById('newInvCat').value=decodeURIComponent(cat)||'⚙️ MECHANICAL';openModal();switchPage('chat');}
+function askAboutIdea(name,desc){const q=`Tell me more about this idea: "${decodeURIComponent(name)}". ${decodeURIComponent(desc)} How feasible is it? What would it take to build?`;document.getElementById('mainInput').value=q;switchPage('chat');sendMessage();}
 
-function addBubble(agent, label) {
-  const div = document.createElement('div');
-  div.className = 'bubble';
-  div.dataset.agent = agent;
-  div.innerHTML = `
-    <div class="bubble-head">
-      <span class="agent-tag">${label}</span>
-      <span class="turn">turn ${output.children.length + 1}</span>
-    </div>
-    <div class="bubble-body thinking">working</div>
-  `;
-  output.appendChild(div);
-  div.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  return div.querySelector('.bubble-body');
-}
+function updateScores(data){const inv=getCurrentInv();if(!inv)return;if(data.feasibility)inv.scores.feasibility=data.feasibility;if(data.market)inv.scores.market=data.market;if(data.novelty)inv.scores.novelty=data.novelty;if(data.cost)inv.scores.cost=data.cost;if(data.patent)inv.patent=data.patent;if(data.patentNote)inv.patentNote=data.patentNote;if(data.marketVal)inv.marketVal=data.marketVal;if(data.marketTags)inv.marketTags=data.marketTags;if(data.problems)inv.problems=data.problems;if(data.keywords)inv.keywords=data.keywords;if(data.versionBump){inv.version+=1;inv.versions.push({v:inv.version,desc:data.versionDesc||'Updated'});document.getElementById('currentVerTag').textContent='v'+inv.version;}if(data.suggestedIdeas&&data.suggestedIdeas.length)addIdeas(data.suggestedIdeas);saveInventions();updateRightPanel(inv);renderInvList();}
+function updateRightPanel(inv){const ss=(id,bid,val)=>{document.getElementById(bid).style.width=val+'%';document.getElementById(id).textContent=val>0?val+'%':'—';};ss('sn-feas','sf-feas',inv.scores.feasibility);ss('sn-mkt','sf-mkt',inv.scores.market);ss('sn-nov','sf-nov',inv.scores.novelty);ss('sn-cost','sf-cost',inv.scores.cost);const p=inv.patent;document.getElementById('patentRing').style.strokeDashoffset=144.5-(144.5*p/100);document.getElementById('patentPct').textContent=p>0?p+'%':'—';document.getElementById('patentNote').textContent=inv.patentNote||'Waiting...';document.getElementById('mktVal').textContent=inv.marketVal||'—';const tc=['tag-c','tag-p','tag-g','tag-o'];document.getElementById('mktTags').innerHTML=(inv.marketTags||[]).map((t,i)=>`<span class="tag ${tc[i%4]}">${t}</span>`).join('');const dc=['var(--gold)','var(--neon4)','var(--neon)','var(--neon2)'];document.getElementById('problemsList').innerHTML=inv.problems&&inv.problems.length?inv.problems.map((p,i)=>`<div class="prob-item"><div class="prob-dot" style="background:${dc[i%4]};box-shadow:0 0 7px ${dc[i%4]};"></div><div class="prob-text">${p}</div></div>`).join(''):'<div style="font-size:11px;color:var(--text3);">No issues detected yet.</div>';document.getElementById('verList').innerHTML=inv.versions&&inv.versions.length?[...inv.versions].reverse().map((v,i)=>`<div class="ver-item"><span class="ver-tag2 ${i===0?'cur':'old'}">v${v.v}</span><span class="ver-desc ${i===0?'':'old'}">${v.desc}</span></div>`).join(''):'<div style="font-size:11px;color:var(--text3);">No versions yet.</div>';const kc=['tag-c','tag-p','tag-g','tag-o','tag-c','tag-g'];document.getElementById('keywordTags').innerHTML=inv.keywords&&inv.keywords.length?inv.keywords.map((k,i)=>`<span class="tag ${kc[i%6]}">${k.toUpperCase()}</span>`).join(''):'<div style="font-size:11px;color:var(--text3);">Generated after analysis.</div>';}
+async function generateBlueprint(inv){const p=`Generate a comprehensive technical blueprint for "${inv.name}" (${inv.cat}). Include: 1) Overview 2) Technical Specifications 3) Components List 4) System Architecture 5) ASCII diagram 6) Manufacturing notes.`;setStatus(true);try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:8000,messages:[{role:'user',content:p}]})});const d=await r.json();setStatus(false);if(d.error){addSystemMsg(`⚠️ Blueprint error: ${d.error.message}`);return;}if(d.content&&d.content[0]){inv.blueprint=d.content[0].text;saveInventions();renderBlueprint(inv);}}catch(e){setStatus(false);addSystemMsg(`⚠️ Error: ${e.message}`);}}
+function renderBlueprint(inv){const el=document.getElementById('blueprintContent');if(!inv||!inv.blueprint){el.innerHTML='<div class="bp-empty">📐 NO BLUEPRINT YET<br><br>Click GENERATE ALL or ask the AI to create a blueprint.</div>';return;}el.innerHTML=`<div class="bp-section"><div class="bp-section-title">📐 BLUEPRINT — ${inv.name.toUpperCase()}</div><div class="bp-content">${inv.blueprint.replace(/```([\s\S]*?)```/g,'<div class="bp-diagram">$1</div>').replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>')}</div></div>`;}
+async function generateManual(inv){const p=`Write a complete step-by-step manual for "${inv.name}" (${inv.cat}). Include: 1) Materials & Tools 2) Safety 3) Step-by-Step Build 4) Testing 5) Troubleshooting 6) Invention story.`;setStatus(true);try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:8000,messages:[{role:'user',content:p}]})});const d=await r.json();setStatus(false);if(d.error){addSystemMsg(`⚠️ Manual error: ${d.error.message}`);return;}if(d.content&&d.content[0]){inv.manual=d.content[0].text;saveInventions();renderManual(inv);}}catch(e){setStatus(false);addSystemMsg(`⚠️ Error: ${e.message}`);}}
+function renderManual(inv){const el=document.getElementById('manualContent');if(!inv||!inv.manual){el.innerHTML='<div class="bp-empty">📖 NO MANUAL YET<br><br>Click GENERATE ALL or ask the AI to write a manual.</div>';return;}const steps=inv.manual.split(/(?=\n\d+\.|(?=\n#{1,2} ))/);let html='',n=0;steps.forEach(s=>{if(!s.trim())return;const lines=s.trim().split('\n'),title=lines[0].replace(/^[\d\.#\s]+/,'').toUpperCase(),content=lines.slice(1).join('\n').replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>').replace(/\n/g,'<br>');n++;html+=`<div class="manual-section"><div class="step-num">0${n}</div><div class="step-title">${title}</div><div class="step-content">${content}</div></div>`;});el.innerHTML=html||`<div class="manual-section"><div class="step-content">${inv.manual.replace(/\n/g,'<br>')}</div></div>`;}
+async function generateVisualization(inv){const p=`For "${inv.name}" (${inv.cat}): 1) Create large ASCII art technical drawing with labels. 2) List top 5 components.\nFormat:\nASCII_DRAWING:\n[art]\nCOMPONENTS:\n[list]`;setStatus(true);try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:8000,messages:[{role:'user',content:p}]})});const d=await r.json();setStatus(false);if(d.error){addSystemMsg(`⚠️ Visualization error: ${d.error.message}`);return;}if(d.content&&d.content[0]){inv.visualization=d.content[0].text;saveInventions();renderVisualization(inv);}}catch(e){setStatus(false);addSystemMsg(`⚠️ Error: ${e.message}`);}}
+function renderVisualization(inv){const el=document.getElementById('vizContent');if(!inv||!inv.visualization){el.innerHTML=`<div class="viz-panel full"><div class="viz-title">INVENTION VISUALIZATION</div><div class="viz-placeholder"><div style="font-size:42px;opacity:0.15;">🖼️</div><div class="viz-placeholder-text">NO VISUALIZATION YET<br>GENERATE FROM CHAT PAGE</div></div></div>`;return;}const text=inv.visualization,am=text.match(/ASCII_DRAWING:([\s\S]*?)(?=COMPONENTS:|$)/i),cm=text.match(/COMPONENTS:([\s\S]*?)$/i),ascii=am?am[1].trim():text,comps=cm?cm[1].trim():'';el.innerHTML=`<div class="viz-panel full"><div class="viz-title">TECHNICAL DRAWING — ${inv.name.toUpperCase()}</div><div class="bp-diagram" style="font-size:10px;line-height:1.4;">${ascii.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div><div class="viz-panel full"><div class="viz-title">COMPONENT BREAKDOWN</div><div style="font-size:13px;line-height:1.8;white-space:pre-line;">${comps.replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>')}</div></div>`;}
+async function generateAll(){if(!apiKey){addMsg('ai','⚠️ Please enter your API key first.');return;}const inv=getCurrentInv();if(!inv){alert('Please select an invention first.');return;}addSystemMsg('⚡ Generating full analysis, blueprint, manual and visualization...');await callAI('Provide a comprehensive technical analysis. Cover feasibility, novelty, market potential, and technical challenges in detail.');await generateBlueprint(inv);await generateManual(inv);await generateVisualization(inv);inv.version+=1;inv.versions.push({v:inv.version,desc:'Full generation complete'});saveInventions();updateRightPanel(inv);renderInvList();document.getElementById('currentVerTag').textContent='v'+inv.version;addSystemMsg(`✅ Complete! Blueprint, manual and visualization ready. Updated to v${inv.version}.`);}
+function runPriorArt(){askFollowup('Run a comprehensive prior art search. Check existing patents, similar products, competing technologies. What exists and how is my invention different and novel?');}
+function generateIdeas(){askFollowup('Autonomously generate 3 breakthrough invention ideas combining existing technologies in novel ways. For each: describe it, explain novelty, estimate feasibility, identify market opportunity.');}
+function attachURL(){const u=prompt('Paste a URL to analyze:');if(u)document.getElementById('mainInput').value=`Analyze this URL and extract all relevant invention/technology information: ${u}`;}
+function attachImage(){alert('Describe your image in the text box for AI analysis. Full image upload requires backend setup.');}
+function attachData(){const d=prompt('Paste raw data or technical notes:');if(d)document.getElementById('mainInput').value=`Analyze this technical data and extract insights for my invention: ${d}`;}
+function toggleMic(){const btn=document.getElementById('micBtn');if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){alert('Voice input requires Chrome browser.');return;}if(isRecording){recognition.stop();isRecording=false;btn.classList.remove('recording');return;}const SR=window.SpeechRecognition||window.webkitSpeechRecognition;recognition=new SR();recognition.continuous=false;recognition.interimResults=false;recognition.lang='en-US';recognition.onresult=e=>{document.getElementById('mainInput').value=e.results[0][0].transcript;isRecording=false;btn.classList.remove('recording');};recognition.onerror=recognition.onend=()=>{isRecording=false;btn.classList.remove('recording');};recognition.start();isRecording=true;btn.classList.add('recording');}
+function renderDashboard(){const total=inventions.length,af=total>0?Math.round(inventions.reduce((s,i)=>s+(i.scores.feasibility||0),0)/total):0,ap=total>0?Math.round(inventions.reduce((s,i)=>s+(i.patent||0),0)/total):0,tv=inventions.reduce((s,i)=>s+(i.version||1),0);document.getElementById('dmTotal').textContent=total;document.getElementById('dmAvgFeas').textContent=af>0?af+'%':'—';document.getElementById('dmPatent').textContent=ap>0?ap+'%':'—';document.getElementById('dmVersions').textContent=tv;const grid=document.getElementById('dashInvGrid');if(!inventions.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text3);font-family:\'Chakra Petch\',sans-serif;font-size:11px;letter-spacing:3px;line-height:2.2;">NO INVENTIONS YET<br>CREATE YOUR FIRST ONE</div>';return;}grid.innerHTML=inventions.map(inv=>{const f=inv.scores.feasibility,fc=f>=75?'var(--neon3)':f>=50?'var(--gold)':'var(--neon2)';return`<div class="dash-inv-card" onclick="selectInvention('${inv.id}');switchPage('chat');"><div class="dash-inv-card-cat">${inv.cat}</div><div class="dash-inv-card-name">${inv.name}</div><div class="dash-progress"><div class="dash-progress-fill" style="width:${f||0}%;background:${fc};box-shadow:0 0 8px ${fc};"></div></div><div class="dash-score-row"><span class="dash-score-label">FEASIBILITY</span><span class="dash-score-val" style="color:${fc};text-shadow:0 0 8px ${fc};">${f||'—'}${f?'%':''}</span></div><div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;"><span style="font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 6px;border:1px solid rgba(200,61,255,0.3);color:var(--neon4);">v${inv.version}</span><span style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text3);">${inv.created}</span>${inv.patent>0?`<span style="font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 6px;border:1px solid rgba(57,255,133,0.3);color:var(--neon3);">PAT ${inv.patent}%</span>`:''}</div></div>`;}).join('');}
+// ═══════════════════════════════════════════════════════
+// RESEARCH PAGE
+// ═══════════════════════════════════════════════════════
+async function runResearch(){
+  if(!apiKey){addSystemMsg('⚠️ Please enter your API key first.');return;}
+  const inv=getCurrentInv();
+  if(!inv){alert('Please select an invention first.');return;}
+  switchPage('research');
+  const statusEl=document.getElementById('researchStatus');
+  const contentEl=document.getElementById('researchContent');
+  statusEl.textContent='SEARCHING...';
+  statusEl.style.color='var(--gold)';
+  contentEl.innerHTML=`<div style="display:flex;flex-direction:column;gap:12px;">
+    ${['🔵 PATENTS','🟣 RESEARCH PAPERS','🟢 ENGINEERING','🟡 MARKET DATA','🔴 LATEST NEWS'].map(c=>`
+    <div style="background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid var(--border);padding:18px;">
+      <div style="font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--neon);margin-bottom:10px;">${c}</div>
+      <div style="display:flex;align-items:center;gap:8px;"><div class="thinking-dots"><span></span><span></span><span></span></div><div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);">SEARCHING...</div></div>
+    </div>`).join('')}
+  </div>`;
 
-function setBody(el, text) {
-  el.classList.remove('thinking');
-  el.textContent = text;
-}
+  const prompt=`You are a research intelligence system. Search and find the most relevant and recent information for this invention:
 
-function addError(message) {
-  const div = document.createElement('div');
-  div.className = 'error';
-  div.textContent = 'Error: ' + message;
-  output.appendChild(div);
-}
+Invention Name: "${inv.name}"
+Category: ${inv.cat}
+Description: ${inv.goal||inv.name}
 
-async function runCouncil() {
-  const apiKey = apiKeyInput.value.trim();
-  const model = modelInput.value;
-  const invention = inventionInput.value.trim();
-  const focus = focusInput.value.trim();
+Search across ALL these categories and provide detailed findings for each:
 
-  if (!apiKey) { alert('Please paste your Anthropic API key first.'); return; }
-  if (!invention) { alert('Please describe the invention.'); return; }
-  if (!focus) { alert('Please specify what to improve.'); return; }
+1. PATENTS — Find the most relevant existing patents. Include patent numbers, titles, assignees, dates and brief descriptions. Focus on patents that are most similar or related.
 
-  sessionStorage.setItem('ipi_key', apiKey);
+2. RESEARCH PAPERS — Find the most relevant academic and scientific papers. Include titles, authors, journals, years and key findings.
 
-  runBtn.disabled = true;
-  runBtn.textContent = '◌ COUNCIL IN SESSION';
-  output.innerHTML = '';
-  actions.classList.add('hidden');
-  transcript = [];
+3. ENGINEERING RESEARCH — Find relevant engineering studies, technical reports, NASA reports, IEEE papers, standards and specifications.
 
-  try {
-    // Turn 1: Inventor proposes
-    const invBody = addBubble('inv', 'INVENTOR · proposal');
-    const proposal = await callClaude(
-      SYS_INVENTOR,
-      `INVENTION:\n${invention}\n\nIMPROVEMENT FOCUS:\n${focus}\n\nPropose one specific improvement.`,
-      apiKey, model
-    );
-    setBody(invBody, proposal);
-    transcript.push({ agent: 'INVENTOR', text: proposal });
+4. MARKET DATA — Find market size, growth rates, key players, market trends, investment data and business opportunities related to this invention field.
 
-    // Turn 2: Researcher fact-checks
-    const resBody = addBubble('res', 'RESEARCHER · prior art & feasibility');
-    const research = await callClaude(
-      SYS_RESEARCHER,
-      `INVENTION:\n${invention}\n\nINVENTOR'S PROPOSAL:\n${proposal}\n\nFact-check this proposal.`,
-      apiKey, model
-    );
-    setBody(resBody, research);
-    transcript.push({ agent: 'RESEARCHER', text: research });
+5. LATEST NEWS — Find the most recent news, developments, announcements and breakthroughs in this invention's field.
 
-    // Turn 3: Critic attacks
-    const criBody = addBubble('cri', 'CRITIC · weaknesses & risks');
-    const critique = await callClaude(
-      SYS_CRITIC,
-      `INVENTION:\n${invention}\n\nINVENTOR'S PROPOSAL:\n${proposal}\n\nRESEARCHER'S FINDINGS:\n${research}\n\nFind every reason this might fail.`,
-      apiKey, model
-    );
-    setBody(criBody, critique);
-    transcript.push({ agent: 'CRITIC', text: critique });
+For each category provide at minimum 3-5 specific findings with as much detail as possible. Format clearly with the category headers exactly as: PATENTS:, RESEARCH PAPERS:, ENGINEERING RESEARCH:, MARKET DATA:, LATEST NEWS:`;
 
-    // Turn 4: Inventor refines
-    const synBody = addBubble('syn', 'INVENTOR · refined proposal');
-    const refined = await callClaude(
-      SYS_INVENTOR,
-      `INVENTION:\n${invention}\n\nYOUR ORIGINAL PROPOSAL:\n${proposal}\n\nRESEARCHER FINDINGS:\n${research}\n\nCRITIC ATTACKS:\n${critique}\n\nRefine the proposal to address every issue raised. If the proposal cannot be saved, propose a different approach.`,
-      apiKey, model
-    );
-    setBody(synBody, refined);
-    transcript.push({ agent: 'INVENTOR (REFINED)', text: refined });
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-opus-4-6',
+        max_tokens:8000,
+        tools:[{"type":"web_search_20250305","name":"web_search"}],
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const d=await r.json();
+    if(d.error){contentEl.innerHTML=`<div class="bp-empty">⚠️ Research error: ${d.error.message}</div>`;statusEl.textContent='ERROR';statusEl.style.color='var(--neon2)';return;}
 
-    actions.classList.remove('hidden');
-  } catch (err) {
-    addError(err.message);
-  } finally {
-    runBtn.disabled = false;
-    runBtn.textContent = '▶ CONVENE THE COUNCIL';
+    // Process response including tool use blocks
+    let fullText='';
+    if(d.content){
+      d.content.forEach(block=>{
+        if(block.type==='text')fullText+=block.text;
+      });
+    }
+
+    inv.research={text:fullText,timestamp:new Date().toLocaleString()};
+    saveInventions();
+    renderResearch(inv);
+    statusEl.textContent='LAST UPDATED: '+new Date().toLocaleTimeString();
+    statusEl.style.color='var(--neon3)';
+  }catch(e){
+    contentEl.innerHTML=`<div class="bp-empty">⚠️ Connection error: ${e.message}</div>`;
+    statusEl.textContent='ERROR';
+    statusEl.style.color='var(--neon2)';
   }
 }
 
-function exportTranscript() {
-  const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-  const lines = [
-    'INVENTAI COUNCIL TRANSCRIPT',
-    '═══════════════════════════════════════════',
-    `Date:    ${date}`,
-    `Focus:   ${focusInput.value}`,
-    `Model:   ${modelInput.value}`,
-    '═══════════════════════════════════════════',
-    '',
-    `INVENTION:`,
-    inventionInput.value,
-    '',
-    '═══════════════════════════════════════════',
-    ''
+async function runResearchAll(){
+  if(!apiKey){addSystemMsg('⚠️ Please enter your API key first.');return;}
+  if(!inventions.length){alert('No inventions to research.');return;}
+  addSystemMsg(`⚡ Running research for all ${inventions.length} inventions...`);
+  for(const inv of inventions){
+    currentInvId=inv.id;
+    await runResearch();
+    await new Promise(r=>setTimeout(r,1000));
+  }
+  addSystemMsg('✅ Research complete for all inventions!');
+}
+
+function renderResearch(inv){
+  const el=document.getElementById('researchContent');
+  if(!inv||!inv.research){
+    el.innerHTML='<div class="bp-empty">📡 NO RESEARCH YET<br><br>Click REFRESH RESEARCH to search all databases.</div>';
+    return;
+  }
+  const text=inv.research.text;
+  const categories=[
+    {key:'PATENTS:',label:'🔵 PATENTS',color:'var(--neon)',border:'rgba(0,238,255,0.3)'},
+    {key:'RESEARCH PAPERS:',label:'🟣 RESEARCH PAPERS',color:'var(--neon4)',border:'rgba(200,61,255,0.3)'},
+    {key:'ENGINEERING RESEARCH:',label:'🟢 ENGINEERING RESEARCH',color:'var(--neon3)',border:'rgba(57,255,133,0.3)'},
+    {key:'MARKET DATA:',label:'🟡 MARKET DATA',color:'var(--gold)',border:'rgba(255,200,68,0.3)'},
+    {key:'LATEST NEWS:',label:'🔴 LATEST NEWS',color:'var(--neon2)',border:'rgba(255,45,120,0.3)'},
   ];
-  for (const turn of transcript) {
-    lines.push(`▼ ${turn.agent}`);
-    lines.push('───────────────────────────────────────────');
-    lines.push(turn.text);
-    lines.push('');
-  }
-  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `inventai-council-${Date.now()}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
+  let html='';
+  categories.forEach((cat,idx)=>{
+    const nextKey=idx<categories.length-1?categories[idx+1].key:null;
+    const start=text.indexOf(cat.key);
+    if(start===-1)return;
+    const end=nextKey?text.indexOf(nextKey,start):-1;
+    const content=end>start?text.substring(start+cat.key.length,end).trim():text.substring(start+cat.key.length).trim();
+    const formatted=content.replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+    html+=`<div style="background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid ${cat.border};padding:20px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:var(--shine);pointer-events:none;"></div>
+      <div style="font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:${cat.color};margin-bottom:14px;text-shadow:0 0 12px ${cat.color};">${cat.label}</div>
+      <div style="font-size:12px;line-height:1.8;font-weight:400;color:var(--text);">${formatted}</div>
+    </div>`;
+  });
+  if(!html)html=`<div style="background:var(--metal2);border:1px solid var(--border);padding:20px;"><div style="font-size:12px;line-height:1.8;color:var(--text);">${text.replace(/\n/g,'<br>')}</div></div>`;
+  el.innerHTML=`<div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px;">LAST UPDATED: ${inv.research.timestamp} · INVENTION: ${inv.name}</div>${html}`;
 }
 
-runBtn.addEventListener('click', runCouncil);
-exportBtn.addEventListener('click', exportTranscript);
-againBtn.addEventListener('click', () => {
-  output.innerHTML = '';
-  actions.classList.add('hidden');
-  focusInput.focus();
-});
+async function implementResearch(){
+  if(!apiKey){addSystemMsg('⚠️ Please enter your API key first.');return;}
+  const inv=getCurrentInv();
+  if(!inv){alert('Please select an invention first.');return;}
+  if(!inv.research){alert('No research found yet. Please run REFRESH RESEARCH first.');return;}
+  const statusEl=document.getElementById('researchStatus');
+  statusEl.textContent='IMPLEMENTING...';
+  statusEl.style.color='var(--gold)';
+  addSystemMsg('🚀 Implementing research findings — upgrading entire invention...');
+  switchPage('chat');
+
+  const implementPrompt=`Based on the following research findings, automatically improve and upgrade every aspect of this invention.
+
+INVENTION: "${inv.name}" (${inv.cat})
+CURRENT VERSION: v${inv.version}
+
+RESEARCH FINDINGS:
+${inv.research.text}
+
+Your task:
+1. Analyze all research findings — patents, papers, engineering research, market data and news
+2. Identify what already exists and what gaps our invention can fill
+3. Strengthen the invention to be more novel and patentable
+4. Add improvements discovered from the research
+5. Fix any weaknesses revealed by existing patents
+6. Make the invention more competitive in the market
+
+Provide a comprehensive upgrade report explaining:
+- What you found in the research that's important
+- What changes you're making to the invention and why
+- How these changes make it stronger and more patentable
+- What makes it still unique despite existing patents
+
+Be specific and technical. This upgrade should significantly improve the invention.`;
+
+  await callAI(implementPrompt);
+
+  // Now regenerate everything
+  addSystemMsg('📐 Upgrading Blueprint...');
+  await generateBlueprint(inv);
+
+  addSystemMsg('📖 Upgrading Manual...');
+  await generateManual(inv);
+
+  addSystemMsg('🖼️ Upgrading Visualization...');
+  await generateVisualization(inv);
+
+  addSystemMsg('💻 Upgrading Code...');
+  await generateCode();
+
+  inv.version+=1;
+  inv.versions.push({v:inv.version,desc:'Research implemented — full upgrade'});
+  saveInventions();
+  updateRightPanel(inv);
+  renderInvList();
+  document.getElementById('currentVerTag').textContent='v'+inv.version;
+  statusEl.textContent='IMPLEMENTED ✅';
+  statusEl.style.color='var(--neon3)';
+  addSystemMsg(`✅ Research successfully implemented! All pages upgraded to v${inv.version}. Blueprint, Manual, Visualization and Code all updated based on research findings.`);
+}
+
+function exportPDF(){const inv=getCurrentInv();if(!inv){alert('Please select an invention first.');return;}const c=`INVENTAI — INVENTION REPORT\n${'═'.repeat(50)}\nName: ${inv.name}\nCategory: ${inv.cat}\nVersion: v${inv.version}\nDate: ${inv.created}\nPatent: ${inv.patent}%\nFeasibility: ${inv.scores.feasibility}%\nMarket: ${inv.scores.market}%\nNovelty: ${inv.scores.novelty}%\nMarket Size: ${inv.marketVal}\n\nBLUEPRINT:\n${inv.blueprint||'Not generated'}\n\nMANUAL:\n${inv.manual||'Not generated'}\n\nCODE:\n${inv.code||'Not generated'}\n\nCONVERSATION:\n${inv.messages.map(m=>`[${m.role.toUpperCase()}] ${m.content.replace(/<[^>]+>/g,'')}`).join('\n\n')}`;const b=new Blob([c],{type:'text/plain'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`INVENTAI_${inv.name.replace(/\s+/g,'_')}_v${inv.version}.txt`;a.click();addSystemMsg(`✅ Report exported: ${inv.name} v${inv.version}`);}
+
+// CODING PAGE
+async function generateCode(){
+  if(!apiKey){addMsg('ai','⚠️ Please enter your API key first.');return;}
+  const inv=getCurrentInv();
+  if(!inv){alert('Please select an invention first.');return;}
+  const isSoftware=inv.cat.includes('SOFTWARE')||inv.cat.includes('PCB')||inv.cat.includes('ROBOTICS');
+  const p=`Generate the COMPLETE and FULL production-ready code for the invention "${inv.name}" (${inv.cat}).
+
+IMPORTANT: Write ALL the code — do not summarize, do not skip sections, do not say "and so on" or "etc". Write every single function, class, module and line completely.
+
+${isSoftware?'This is a software/firmware invention — write complete implementation.':'This is a physical/hardware invention — write complete firmware, control software and embedded code.'}
+
+Include ALL of the following completely:
+1. COMPLETE main application code — every function fully written
+2. COMPLETE prediction/core algorithms — every line of the algorithm
+3. COMPLETE data structures, models and classes
+4. COMPLETE API endpoints and interfaces
+5. COMPLETE configuration, setup and initialization code
+6. COMPLETE error handling for every function
+7. COMPLETE comments explaining every section
+8. COMPLETE unit test examples
+
+Use proper code formatting with code blocks.
+This code should be ready to copy, paste and run.
+Do NOT leave anything incomplete or as pseudocode.`;
+  setStatus(true);
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:8000,messages:[{role:'user',content:p}]})});
+    const d=await r.json();setStatus(false);
+    if(d.error){addSystemMsg(`⚠️ Code generation error: ${d.error.message}`);return;}
+    if(d.content&&d.content[0]){
+      inv.code=d.content[0].text;
+      inv.version+=1;
+      inv.versions.push({v:inv.version,desc:'Code generated'});
+      saveInventions();renderCoding(inv);updateRightPanel(inv);renderInvList();
+      document.getElementById('currentVerTag').textContent='v'+inv.version;
+      addSystemMsg(`✅ Code generated for ${inv.name}! Check the CODING tab.`);
+      switchPage('coding');
+    }
+  }catch(e){setStatus(false);addSystemMsg(`⚠️ Code error: ${e.message}`);}
+}
+
+function renderCoding(inv){
+  const el=document.getElementById('codingContent');
+  if(!inv||!inv.code){
+    el.innerHTML='<div class="bp-empty">💻 NO CODE YET<br><br>Click GENERATE CODE or ask the AI in the Chat page<br>to write code for your invention.</div>';
+    return;
+  }
+  const lines=inv.code.split('\n');
+  const lineCount=lines.length;
+  const lineNums=lines.map((_,i)=>(i+1)).join('\n');
+  el.innerHTML=`
+    <div class="code-editor-header">
+      <div class="code-editor-title">💻 CODE EDITOR — ${inv.name.toUpperCase()}</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="code-editor-info" id="codeInfo">${lineCount} lines · ${inv.code.length} chars</span>
+        <button class="code-save-btn" onclick="saveCodeEdits()">💾 SAVE EDITS</button>
+      </div>
+    </div>
+    <div class="code-editor-wrap">
+      <div class="code-line-numbers" id="codeLineNums">${lineNums}</div>
+      <textarea class="code-textarea" id="codeEditorArea" spellcheck="false"
+        onscroll="syncScroll(this)"
+        oninput="onCodeEdit(this)"
+        onkeydown="handleCodeKey(event)">${inv.code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+    </div>`;
+}
+
+function syncScroll(ta){
+  const nums=document.getElementById('codeLineNums');
+  if(nums)nums.scrollTop=ta.scrollTop;
+}
+
+function onCodeEdit(ta){
+  const lines=ta.value.split('\n');
+  const nums=document.getElementById('codeLineNums');
+  const info=document.getElementById('codeInfo');
+  if(nums)nums.textContent=lines.map((_,i)=>i+1).join('\n');
+  if(info)info.textContent=`${lines.length} lines · ${ta.value.length} chars`;
+  // Sync scroll
+  syncScroll(ta);
+}
+
+function handleCodeKey(e){
+  // Tab key inserts spaces instead of changing focus
+  if(e.key==='Tab'){
+    e.preventDefault();
+    const ta=e.target;
+    const start=ta.selectionStart;
+    const end=ta.selectionEnd;
+    ta.value=ta.value.substring(0,start)+'  '+ta.value.substring(end);
+    ta.selectionStart=ta.selectionEnd=start+2;
+    onCodeEdit(ta);
+  }
+}
+
+function saveCodeEdits(){
+  const ta=document.getElementById('codeEditorArea');
+  if(!ta)return;
+  const inv=getCurrentInv();
+  if(!inv)return;
+  inv.code=ta.value;
+  inv.versions.push({v:inv.version,desc:'Code edited manually'});
+  saveInventions();
+  addSystemMsg('✅ Code edits saved!');
+  // Flash save button green
+  const btn=document.querySelector('.code-save-btn');
+  if(btn){btn.textContent='✅ SAVED!';btn.style.color='var(--neon3)';setTimeout(()=>{btn.textContent='💾 SAVE EDITS';btn.style.color='';},2000);}
+}
+
+function copyCode(){
+  const inv=getCurrentInv();
+  if(!inv||!inv.code){alert('No code generated yet.');return;}
+  navigator.clipboard.writeText(inv.code).then(()=>{addSystemMsg('✅ Code copied to clipboard!');});
+}
+
+function sendToCode(msgId){
+  const el=document.getElementById(msgId);
+  if(!el)return;
+  const bubble=el.querySelector('.msg-bubble');
+  const raw=decodeURIComponent(bubble.getAttribute('data-raw')||'');
+  const inv=getCurrentInv();
+  if(!inv)return;
+  // Extract code blocks if present
+  const codeBlocks=raw.match(/```[\s\S]*?```/g);
+  const codeToAdd=codeBlocks?codeBlocks.join('\n\n'):raw;
+  inv.code=inv.code?inv.code+'\n\n// ═══ ADDED FROM CHAT ═══\n\n'+codeToAdd:codeToAdd;
+  inv.version+=1;
+  inv.versions.push({v:inv.version,desc:'Code added from chat'});
+  saveInventions();
+  renderCoding(inv);
+  updateRightPanel(inv);
+  renderInvList();
+  document.getElementById('currentVerTag').textContent='v'+inv.version;
+  switchPage('coding');
+  addSystemMsg('✅ Code added to Coding page! Version updated to v'+inv.version);
+}
+
+function openPastePanel(){
+  document.getElementById('pastePanel').style.display='block';
+  document.getElementById('pasteCodeInput').focus();
+}
+
+function closePastePanel(){
+  document.getElementById('pastePanel').style.display='none';
+  document.getElementById('pasteCodeInput').value='';
+}
+
+function pasteCodeToPage(){
+  const text=document.getElementById('pasteCodeInput').value.trim();
+  if(!text){alert('Please paste some code first.');return;}
+  const inv=getCurrentInv();
+  if(!inv)return;
+  inv.code=inv.code?inv.code+'\n\n// ═══ PASTED CODE ═══\n\n'+text:text;
+  inv.version+=1;
+  inv.versions.push({v:inv.version,desc:'Code pasted manually'});
+  saveInventions();
+  renderCoding(inv);
+  updateRightPanel(inv);
+  renderInvList();
+  document.getElementById('currentVerTag').textContent='v'+inv.version;
+  closePastePanel();
+  addSystemMsg('✅ Code pasted and added to Coding page! Version updated to v'+inv.version);
+}
 </script>
 </body>
 </html>
