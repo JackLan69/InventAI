@@ -833,7 +833,104 @@ function addThinking(){const c=document.getElementById('messages'),el=document.c
 function removeThinking(){const el=document.getElementById('thinkingEl');if(el)el.remove();}
 function scrollToBottom(){const c=document.getElementById('messages');c.scrollTop=c.scrollHeight;}
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
-async function sendMessage(){const input=document.getElementById('mainInput'),text=input.value.trim();if(!text||isThinking)return;if(!currentInvId){alert('Please create or select an invention first.');return;}input.value='';addMsg('user',text);await callAI(text);}
+
+// ═══════════════════════════════════════════════════════
+// SMART DELETE COMMANDS — type what to delete in chat
+// ═══════════════════════════════════════════════════════
+function detectDeleteCommand(text){
+  const t=text.toLowerCase().trim();
+  if(t.match(/delete|clear|remove|erase/)){
+    // SMART CLEANUP — delete chats but keep all findings
+    if(t.match(/clean|cleanup|useless|unnecessary|concluded|done|finished|keep.*(info|data|finding|blueprint|code|research|result)/)||
+       t.match(/(delete|clear|remove).*(chat|message|conversation).*(keep|but|except|save)/)||
+       t.match(/keep.*(everything|all).*(delete|clear|remove).*(chat|message)/)||
+       t.match(/delete.*(useless|unnecessary|old).*(chat|message|conversation)/))
+      return {type:'cleanup_chats',label:'all chat messages ONLY — Blueprint, Manual, Visualization, Code and Research will be kept safely'};
+    // Clear all messages
+    if(t.match(/all.*(message|chat|conversation)|chat.*all|conversation.*all|everything.*chat/))
+      return {type:'chat_all',label:'ALL chat messages'};
+    if(t.match(/last\s+(\d+)\s*(message|msg)/)){
+      const n=parseInt(t.match(/last\s+(\d+)/)[1]);
+      return {type:'chat_last_n',n,label:`last ${n} messages`};
+    }
+    if(t.match(/last.*(message|msg|response|answer)/))
+      return {type:'chat_last_n',n:1,label:'last message'};
+    if(t.match(/blueprint/))
+      return {type:'blueprint',label:'Blueprint'};
+    if(t.match(/manual/))
+      return {type:'manual',label:'Manual'};
+    if(t.match(/visual|visualization|diagram/))
+      return {type:'visualization',label:'Visualization'};
+    if(t.match(/code|coding/))
+      return {type:'code',label:'all Code'};
+    if(t.match(/research/))
+      return {type:'research',label:'Research'};
+    if(t.match(/everything|all pages|all content/))
+      return {type:'everything',label:'EVERYTHING on all pages'};
+  }
+  return null;
+}
+
+function executeDeleteCommand(cmd){
+  const inv=getCurrentInv();
+  if(!inv)return;
+  switch(cmd.type){
+    case 'cleanup_chats':
+      inv.messages=[];saveInventions();renderMessages(inv);
+      addSystemMsg('✅ All chat messages cleared! Your Blueprint, Manual, Visualization, Code and Research are all safely kept. Starting fresh chat! 🚀');break;
+    case 'chat_all':
+      inv.messages=[];saveInventions();renderMessages(inv);
+      addSystemMsg('✅ All chat messages deleted.');break;
+    case 'chat_last_n':
+      inv.messages=inv.messages.slice(0,Math.max(0,inv.messages.length-cmd.n));
+      saveInventions();renderMessages(inv);
+      addSystemMsg(`✅ Last ${cmd.n} message(s) deleted.`);break;
+    case 'blueprint':
+      inv.blueprint=null;saveInventions();renderBlueprint(inv);
+      addSystemMsg('✅ Blueprint cleared.');break;
+    case 'manual':
+      inv.manual=null;saveInventions();renderManual(inv);
+      addSystemMsg('✅ Manual cleared.');break;
+    case 'visualization':
+      inv.visualization=null;saveInventions();renderVisualization(inv);
+      addSystemMsg('✅ Visualization cleared.');break;
+    case 'code':
+      inv.code=null;saveInventions();renderCoding(inv);
+      addSystemMsg('✅ Code cleared.');break;
+    case 'research':
+      inv.research=null;saveInventions();
+      document.getElementById('researchContent').innerHTML='<div class="bp-empty">📡 NO RESEARCH YET<br><br>Click REFRESH RESEARCH to search all databases.</div>';
+      addSystemMsg('✅ Research cleared.');break;
+    case 'everything':
+      inv.blueprint=null;inv.manual=null;inv.visualization=null;
+      inv.code=null;inv.research=null;inv.messages=[];
+      saveInventions();renderMessages(inv);renderBlueprint(inv);
+      renderManual(inv);renderVisualization(inv);renderCoding(inv);
+      document.getElementById('researchContent').innerHTML='<div class="bp-empty">📡 NO RESEARCH YET</div>';
+      addSystemMsg('✅ Everything cleared. Fresh start!');break;
+  }
+}
+
+async function sendMessage(){
+  const input=document.getElementById('mainInput'),text=input.value.trim();
+  if(!text||isThinking)return;
+  if(!currentInvId){alert('Please create or select an invention first.');return;}
+
+  // Check for delete command FIRST
+  const deleteCmd=detectDeleteCommand(text);
+  if(deleteCmd){
+    input.value='';
+    addMsg('user',text);
+    showConfirm(`Delete ${deleteCmd.label}? This cannot be undone.`,()=>{
+      executeDeleteCommand(deleteCmd);
+    });
+    return;
+  }
+
+  input.value='';
+  addMsg('user',text);
+  await callAI(text);
+}
 async function callAI(userMessage,systemOverride=null){if(!apiKey){addMsg('ai','⚠️ Please enter your Anthropic API key above to activate the AI.');return;}const inv=getCurrentInv();if(!inv)return;setStatus(true);addThinking();const history=inv.messages.slice(-12).filter(m=>m.role!=='system').map(m=>({role:m.role==='ai'?'assistant':'user',content:m.content.replace(/<[^>]+>/g,'')}));const sys=systemOverride||`You are INVENTAI, a world-class invention intelligence assistant powered by Claude Opus 4.6. Current invention: "${inv.name}" | Category: ${inv.cat} | Goal: ${inv.goal||'Not specified'} | Version: v${inv.version}. Be specific, technical, proactive. Always look for related invention opportunities the user has NOT thought of yet. After your response, ALWAYS end with this exact JSON:
 INVENTAI_DATA:{"feasibility":85,"market":90,"novelty":78,"cost":65,"patent":82,"patentNote":"Brief status","marketVal":"$2.3B","marketTags":["TAG1","TAG2","TAG3"],"problems":["Problem 1","Problem 2"],"keywords":["kw1","kw2","kw3","kw4"],"versionBump":false,"versionDesc":"","suggestedIdeas":[{"type":"new","name":"Invention Name","desc":"Brief description of this new invention idea you spotted","cat":"⚙️ MECHANICAL"},{"type":"upgrade","name":"Upgrade Name","desc":"Brief description of this upgrade or improvement idea","cat":"🔌 PCB / ELECTRONICS"}]}`;
 try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4000,system:sys,messages:[...history.slice(0,-1),{role:'user',content:userMessage}]})});const d=await r.json();removeThinking();if(d.error){addMsg('ai',`⚠️ API Error: ${d.error.type} — ${d.error.message}`);setStatus(false);return;}if(!d.content||!d.content[0]){addMsg('ai','⚠️ Empty response from AI. Please try again.');setStatus(false);return;}let ft=d.content[0].text,dt=ft,jd=null;const ji=ft.indexOf('INVENTAI_DATA:');if(ji!==-1){dt=ft.substring(0,ji).trim();try{jd=JSON.parse(ft.substring(ji+14).trim());}catch(e){}}dt=dt.replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>').replace(/`(.*?)`/g,'<span class="hl3">$1</span>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');const chips=`<div class="chips"><div class="chip" onclick="askFollowup('Generate the full blueprint for this invention')">→ BLUEPRINT</div><div class="chip" onclick="askFollowup('Write the complete step-by-step manual')">→ MANUAL</div><div class="chip" onclick="askFollowup('Run a prior art and patent search')">→ PRIOR ART</div><div class="chip" onclick="askFollowup('Identify all potential problems and solutions')">→ PROBLEMS</div><div class="chip" onclick="askFollowup('Full market analysis and competitor landscape')">→ MARKET</div></div>`;addMsg('ai',dt+chips);if(jd)updateScores(jd);setStatus(false);}catch(err){removeThinking();addMsg('ai',`⚠️ Connection error: ${err.message}. Check your API key and internet connection.`);setStatus(false);}}
