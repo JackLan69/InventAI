@@ -500,6 +500,7 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
           <button class="tbtn" onclick="runPriorArt()">🔍 PRIOR ART</button>
           <button class="tbtn" onclick="generateIdeas()">⚡ AUTO-INVENT</button>
           <button class="tbtn active-btn" onclick="generateAll()">▶ GENERATE ALL</button>
+          <button class="tbtn" style="border-color:rgba(255,45,120,0.4);color:var(--neon2);" onclick="clearAllMessages()">🗑 CLEAR CHAT</button>
         </div>
       </div>
       <div class="messages" id="messages">
@@ -527,18 +528,30 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
     </div>
 
     <div class="page" id="page-blueprint">
+      <div style="padding:10px 20px;border-bottom:1px solid var(--border2);background:linear-gradient(135deg,var(--metal1),var(--metal2));display:flex;gap:8px;flex-shrink:0;">
+        <button class="tbtn active-btn" onclick="generateBlueprint(getCurrentInv())">📐 REGENERATE</button>
+        <button class="tbtn" style="border-color:rgba(255,45,120,0.4);color:var(--neon2);" onclick="clearBlueprint()">🗑 CLEAR BLUEPRINT</button>
+      </div>
       <div class="bp-page" id="blueprintContent">
         <div class="bp-empty">📐 NO BLUEPRINT YET<br><br>Generate from Chat using GENERATE ALL<br>or ask the AI to create a blueprint.</div>
       </div>
     </div>
 
     <div class="page" id="page-manual">
+      <div style="padding:10px 20px;border-bottom:1px solid var(--border2);background:linear-gradient(135deg,var(--metal1),var(--metal2));display:flex;gap:8px;flex-shrink:0;">
+        <button class="tbtn active-btn" onclick="generateManual(getCurrentInv())">📖 REGENERATE</button>
+        <button class="tbtn" style="border-color:rgba(255,45,120,0.4);color:var(--neon2);" onclick="clearManual()">🗑 CLEAR MANUAL</button>
+      </div>
       <div class="manual-page" id="manualContent">
         <div class="bp-empty">📖 NO MANUAL YET<br><br>Generate from Chat using GENERATE ALL<br>or ask the AI to write a step-by-step manual.</div>
       </div>
     </div>
 
     <div class="page" id="page-viz">
+      <div style="padding:10px 20px;border-bottom:1px solid var(--border2);background:linear-gradient(135deg,var(--metal1),var(--metal2));display:flex;gap:8px;flex-shrink:0;">
+        <button class="tbtn active-btn" onclick="generateVisualization(getCurrentInv())">🖼️ REGENERATE</button>
+        <button class="tbtn" style="border-color:rgba(255,45,120,0.4);color:var(--neon2);" onclick="clearVisualization()">🗑 CLEAR VISUALIZATION</button>
+      </div>
       <div class="viz-page" id="vizContent">
         <div class="viz-panel full">
           <div class="viz-title">INVENTION VISUALIZATION</div>
@@ -591,6 +604,8 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
         <button class="tbtn" onclick="switchPage('chat');setTimeout(()=>askFollowup('Generate the database schema for this invention'),100)">🗄️ DATABASE</button>
         <button class="tbtn" onclick="copyCode()">📋 COPY ALL CODE</button>
         <button class="tbtn" style="border-color:rgba(57,255,133,0.4);color:var(--neon3);background:rgba(57,255,133,0.06);" onclick="openPastePanel()">📥 PASTE CODE FROM CHAT</button>
+        <button class="tbtn" style="border-color:rgba(200,61,255,0.4);color:var(--neon4);background:rgba(200,61,255,0.06);" onclick="loadIPICode()">🐍 LOAD IPI CODE</button>
+        <button class="tbtn" style="border-color:rgba(255,45,120,0.4);color:var(--neon2);background:rgba(255,45,120,0.06);" onclick="clearCode()">🗑 CLEAR ALL CODE</button>
       </div>
       <!-- PASTE PANEL -->
       <div id="pastePanel" style="display:none;padding:14px 20px;border-top:1px solid var(--border2);background:rgba(57,255,133,0.03);flex-shrink:0;">
@@ -617,6 +632,7 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
           <button class="tbtn active-btn" onclick="runResearch()">🔄 REFRESH RESEARCH</button>
           <button class="tbtn" onclick="runResearchAll()">⚡ RESEARCH ALL INVENTIONS</button>
           <button class="tbtn" style="border-color:rgba(57,255,133,0.5);color:var(--neon3);background:rgba(57,255,133,0.08);" onclick="implementResearch()">🚀 IMPLEMENT RESEARCH</button>
+          <button class="tbtn" style="border-color:rgba(255,45,120,0.4);color:var(--neon2);" onclick="clearResearch()">🗑 CLEAR</button>
         </div>
       </div>
       <div style="flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:16px;" id="researchContent">
@@ -1151,6 +1167,31 @@ function copyCode(){
   navigator.clipboard.writeText(inv.code).then(()=>{addSystemMsg('✅ Code copied to clipboard!');});
 }
 
+function clearCode(){
+  const inv=getCurrentInv();if(!inv||!inv.code){alert('No code to clear.');return;}
+  showConfirm('Clear ALL code? This cannot be undone.',()=>{inv.code=null;inv.versions.push({v:inv.version,desc:'Code cleared'});saveInventions();renderCoding(inv);addSystemMsg('✅ Code cleared.');});
+}
+function clearBlueprint(){
+  const inv=getCurrentInv();if(!inv||!inv.blueprint){alert('No blueprint to clear.');return;}
+  showConfirm('Clear the Blueprint? This cannot be undone.',()=>{inv.blueprint=null;saveInventions();renderBlueprint(inv);addSystemMsg('✅ Blueprint cleared.');});
+}
+function clearManual(){
+  const inv=getCurrentInv();if(!inv||!inv.manual){alert('No manual to clear.');return;}
+  showConfirm('Clear the Manual? This cannot be undone.',()=>{inv.manual=null;saveInventions();renderManual(inv);addSystemMsg('✅ Manual cleared.');});
+}
+function clearVisualization(){
+  const inv=getCurrentInv();if(!inv||!inv.visualization){alert('No visualization to clear.');return;}
+  showConfirm('Clear the Visualization? This cannot be undone.',()=>{inv.visualization=null;saveInventions();renderVisualization(inv);addSystemMsg('✅ Visualization cleared.');});
+}
+function clearResearch(){
+  const inv=getCurrentInv();if(!inv||!inv.research){alert('No research to clear.');return;}
+  showConfirm('Clear the Research? This cannot be undone.',()=>{inv.research=null;saveInventions();document.getElementById('researchContent').innerHTML='<div class="bp-empty">📡 NO RESEARCH YET<br><br>Click REFRESH RESEARCH to search all databases.</div>';addSystemMsg('✅ Research cleared.');});
+}
+function clearAllMessages(){
+  const inv=getCurrentInv();if(!inv||!inv.messages.length){alert('No messages to clear.');return;}
+  showConfirm('Clear ALL chat messages? This cannot be undone.',()=>{inv.messages=[];saveInventions();renderMessages(inv);addSystemMsg('✅ Chat cleared!');});
+}
+
 function sendToCode(msgId){
   const el=document.getElementById(msgId);
   if(!el)return;
@@ -1199,6 +1240,1000 @@ function pasteCodeToPage(){
   closePastePanel();
   addSystemMsg('✅ Code pasted and added to Coding page! Version updated to v'+inv.version);
 }
+
+// ═══════════════════════════════════════════════════════
+// IPI CODE LOADER — Full 971-line Python implementation
+// ═══════════════════════════════════════════════════════
+const IPI_CODE = `"""
+INTENTION PREDICTION INTERFACE — Consolidated edition
+Original: 13 files, ~167KB. This file: all features, ~70% smaller.
+
+Sections:
+  1. BEHAVIORAL ENGINE     (was Parts 1-2)
+  2. FACIAL ANALYSIS        (was Parts 3-6)
+  3. PREDICTION ENGINE      (was Parts 7-8)
+  4. ACTION ENGINE          (was Parts 9-10)
+  5. PRIVACY ENGINE         (was Part 11)
+  6. UX ENGINE              (was Part 12)
+  7. ORCHESTRATOR           (was Part 13)
+"""
+
+import numpy as np
+import math, json, hashlib, hmac, base64, secrets, uuid, threading, time, copy, os
+from datetime import datetime, timedelta
+from collections import defaultdict, deque, OrderedDict
+from enum import Enum, auto
+
+
+# ═══════════════════════════════════════════════════════════════
+# 1. BEHAVIORAL ENGINE — data collection + context
+# ═══════════════════════════════════════════════════════════════
+
+class EventStore:
+    """
+    Unified event store. Replaces the original 4 separate classes
+    (AppSequenceTracker, AppFrequencyAnalyzer, TimeOfDayPatternEngine,
+    DayOfWeekPatternEngine) which all stored the same events with
+    different aggregations. One source of truth, queries on demand.
+    """
+    SLOTS = 96  # 15-min slots per day
+
+    def __init__(self, max_history=50000):
+        self.events = deque(maxlen=max_history)
+        self._current_app = None
+        self._current_start = None
+        self._transitions = defaultdict(lambda: defaultdict(int))
+
+    # ---- recording ----
+    def app_opened(self, app, ts=None):
+        ts = ts or datetime.now()
+        if self._current_app:
+            dur = (ts - self._current_start).total_seconds()
+            self.events.append({'app': self._current_app, 'action': 'close',
+                                'ts': ts, 'duration': dur})
+            self._transitions[self._current_app][app] += 1
+        self.events.append({'app': app, 'action': 'open', 'ts': ts,
+                            'hour': ts.hour, 'dow': ts.weekday(),
+                            'slot': (ts.hour * 60 + ts.minute) // 15,
+                            'prev': self._current_app})
+        self._current_app = app
+        self._current_start = ts
+
+    # ---- query helpers ----
+    def _opens(self):
+        return [e for e in self.events if e['action'] == 'open']
+
+    def last_n_apps(self, n=10):
+        return [e['app'] for e in self._opens()[-n:]]
+
+    def transition_prob(self, from_app):
+        t = self._transitions[from_app]
+        total = sum(t.values()) or 1
+        return {a: c / total for a, c in t.items()}
+
+    def sequence_windows(self, size=5):
+        opens = self._opens()
+        return [{'sequence': [e['app'] for e in opens[i:i + size]],
+                 'next': opens[i + size]['app']}
+                for i in range(len(opens) - size)]
+
+    def _filtered_dist(self, predicate):
+        counts = defaultdict(int)
+        for e in self._opens():
+            if predicate(e):
+                counts[e['app']] += 1
+        total = sum(counts.values()) or 1
+        return {a: c / total for a, c in counts.items()}
+
+    def top_apps(self, n=10, hour=None, dow=None):
+        pred = lambda e: ((hour is None or e['hour'] == hour) and
+                          (dow is None or e['dow'] == dow))
+        dist = self._filtered_dist(pred)
+        return sorted(dist.items(), key=lambda x: -x[1])[:n]
+
+    def slot_prediction(self, ts=None):
+        """Distribution for current 15-min slot, smoothed by neighbors."""
+        ts = ts or datetime.now()
+        target = (ts.hour * 60 + ts.minute) // 15
+        combined = defaultdict(float)
+        for offset, w in [(0, 3.0), (-2, 0.4), (-1, 0.7), (1, 0.7), (2, 0.4)]:
+            slot = (target + offset) % self.SLOTS
+            slot_dist = self._filtered_dist(lambda e, s=slot: e['slot'] == s)
+            for a, p in slot_dist.items():
+                combined[a] += p * w
+        total = sum(combined.values()) or 1
+        return {a: v / total for a, v in combined.items()}
+
+    def day_similarity(self, d1, d2):
+        a1 = self._filtered_dist(lambda e: e['dow'] == d1)
+        a2 = self._filtered_dist(lambda e: e['dow'] == d2)
+        keys = set(a1) | set(a2)
+        if not keys:
+            return 0.0
+        v1 = np.array([a1.get(k, 0) for k in keys])
+        v2 = np.array([a2.get(k, 0) for k in keys])
+        n = np.linalg.norm(v1) * np.linalg.norm(v2)
+        return float(np.dot(v1, v2) / n) if n else 0.0
+
+
+class SwipePatternTracker:
+    """Tracks swipe gestures: direction, velocity, pressure."""
+    def __init__(self, max_history=10000):
+        self.swipes = deque(maxlen=max_history)
+
+    def record(self, direction, velocity, pressure=1.0, ts=None):
+        self.swipes.append({'dir': direction, 'vel': velocity,
+                            'pressure': pressure, 'ts': ts or datetime.now()})
+
+    def stats(self, window=100):
+        recent = list(self.swipes)[-window:]
+        if not recent:
+            return {}
+        dirs = defaultdict(int)
+        for s in recent:
+            dirs[s['dir']] += 1
+        return {'dir_dist': {d: c / len(recent) for d, c in dirs.items()},
+                'avg_velocity': np.mean([s['vel'] for s in recent]),
+                'avg_pressure': np.mean([s['pressure'] for s in recent])}
+
+
+class NotificationTracker:
+    """
+    Merged NotificationResponseTracker + NotificationValueAnalyzer.
+    Both originally tracked the same notifications with different metrics.
+    """
+    def __init__(self):
+        self.history = deque(maxlen=20000)
+        self.app_stats = defaultdict(lambda: {'sent': 0, 'opened': 0,
+                                              'dismissed': 0, 'response_times': []})
+
+    def notify(self, app, notif_id, ts=None):
+        ts = ts or datetime.now()
+        self.history.append({'app': app, 'id': notif_id, 'ts': ts, 'response': None})
+        self.app_stats[app]['sent'] += 1
+
+    def respond(self, notif_id, response):
+        for n in reversed(self.history):
+            if n['id'] == notif_id and n['response'] is None:
+                n['response'] = response
+                rt = (datetime.now() - n['ts']).total_seconds()
+                self.app_stats[n['app']][response] = self.app_stats[n['app']].get(response, 0) + 1
+                if response == 'opened':
+                    self.app_stats[n['app']]['response_times'].append(rt)
+                return
+
+    def value_score(self, app):
+        """How valuable are notifications from this app? 0-1 score."""
+        s = self.app_stats[app]
+        if s['sent'] == 0:
+            return 0.5
+        open_rate = s['opened'] / s['sent']
+        speed = 1.0
+        if s['response_times']:
+            median_rt = np.median(s['response_times'])
+            speed = max(0.1, 1.0 - min(median_rt / 300, 0.9))  # faster = higher
+        return float(0.6 * open_rate + 0.4 * speed)
+
+
+class WiFiLocationContext:
+    """Infers location category from connected WiFi network."""
+    def __init__(self):
+        self.networks = {}  # ssid -> {category, visits, last_seen}
+
+    def observe(self, ssid, ts=None):
+        ts = ts or datetime.now()
+        if ssid not in self.networks:
+            self.networks[ssid] = {'category': 'unknown', 'visits': 0,
+                                   'first_seen': ts, 'last_seen': ts}
+        self.networks[ssid]['visits'] += 1
+        self.networks[ssid]['last_seen'] = ts
+
+    def label(self, ssid, category):
+        if ssid in self.networks:
+            self.networks[ssid]['category'] = category
+
+    def current_context(self, ssid):
+        return self.networks.get(ssid, {}).get('category', 'unknown')
+
+
+# ═══════════════════════════════════════════════════════════════
+# 2. FACIAL ANALYSIS — landmarks, action units, emotions
+# ═══════════════════════════════════════════════════════════════
+
+class FaceLandmarkProvider:
+    """Wraps a landmark model. Returns 68 (x,y) points."""
+    def __init__(self, model_name='default_68'):
+        self.model_name = model_name
+        self.last_landmarks = None
+
+    def extract(self, frame):
+        # Stub — production code wires in dlib / mediapipe / your model
+        self.last_landmarks = np.zeros((68, 2))
+        return self.last_landmarks
+
+    def landmark_distance(self, i, j):
+        if self.last_landmarks is None:
+            return 0.0
+        return float(np.linalg.norm(self.last_landmarks[i] - self.last_landmarks[j]))
+
+
+# Action Unit detector — replaces 6 separate AU classes (AU21-AU26)
+# plus the AU1-AU20 set. One config-driven class instead of 26 copies.
+AU_CONFIG = {
+    1:  {'name': 'InnerBrowRaiser', 'landmarks': (21, 22), 'baseline_axis': 'y'},
+    2:  {'name': 'OuterBrowRaiser', 'landmarks': (17, 26), 'baseline_axis': 'y'},
+    4:  {'name': 'BrowLowerer',     'landmarks': (21, 22), 'baseline_axis': 'y'},
+    5:  {'name': 'UpperLidRaiser',  'landmarks': (37, 41), 'baseline_axis': 'y'},
+    6:  {'name': 'CheekRaiser',     'landmarks': (1, 36),  'baseline_axis': 'y'},
+    7:  {'name': 'LidTightener',    'landmarks': (37, 41), 'baseline_axis': 'y'},
+    9:  {'name': 'NoseWrinkler',    'landmarks': (31, 35), 'baseline_axis': 'x'},
+    10: {'name': 'UpperLipRaiser',  'landmarks': (50, 52), 'baseline_axis': 'y'},
+    12: {'name': 'LipCornerPuller', 'landmarks': (48, 54), 'baseline_axis': 'x'},
+    14: {'name': 'Dimpler',         'landmarks': (48, 54), 'baseline_axis': 'x'},
+    15: {'name': 'LipCornerDepress','landmarks': (48, 54), 'baseline_axis': 'y'},
+    17: {'name': 'ChinRaiser',      'landmarks': (8, 57),  'baseline_axis': 'y'},
+    20: {'name': 'LipStretcher',    'landmarks': (48, 54), 'baseline_axis': 'x'},
+    21: {'name': 'NeckTightener',   'landmarks': (5, 11),  'baseline_axis': 'y'},
+    22: {'name': 'LipFunneler',     'landmarks': (61, 67), 'baseline_axis': 'y'},
+    23: {'name': 'LipTightener',    'landmarks': (48, 54), 'baseline_axis': 'x'},
+    24: {'name': 'LipPresser',      'landmarks': (62, 66), 'baseline_axis': 'y'},
+    25: {'name': 'LipsPart',        'landmarks': (62, 66), 'baseline_axis': 'y'},
+    26: {'name': 'JawDrop',         'landmarks': (8, 33),  'baseline_axis': 'y'},
+}
+
+
+class ActionUnitDetector:
+    """One detector for any AU. Originally 26 separate classes."""
+    def __init__(self, au_id, landmark_provider):
+        if au_id not in AU_CONFIG:
+            raise ValueError(f"Unknown AU{au_id}")
+        cfg = AU_CONFIG[au_id]
+        self.au_id = au_id
+        self.name = cfg['name']
+        self.lm_a, self.lm_b = cfg['landmarks']
+        self.axis = cfg['baseline_axis']
+        self.lp = landmark_provider
+        self.baseline = None
+
+    def calibrate(self, frames):
+        """Learn neutral-face baseline from N frames."""
+        readings = []
+        for f in frames:
+            self.lp.extract(f)
+            readings.append(self.lp.landmark_distance(self.lm_a, self.lm_b))
+        self.baseline = float(np.median(readings)) if readings else 0.0
+
+    def detect(self, frame):
+        """Returns intensity 0.0-1.0 of this AU vs baseline."""
+        self.lp.extract(frame)
+        d = self.lp.landmark_distance(self.lm_a, self.lm_b)
+        if not self.baseline:
+            return 0.0
+        delta = abs(d - self.baseline) / self.baseline
+        return float(min(1.0, delta * 2))
+
+
+# Basic emotions: happy/sad/angry/fear/surprise/disgust/contempt/neutral
+EMOTION_AU_MAP = {
+    'happy':    {6: 0.5, 12: 0.5},
+    'sad':      {1: 0.4, 4: 0.3, 15: 0.3},
+    'angry':    {4: 0.4, 5: 0.2, 7: 0.2, 23: 0.2},
+    'fear':     {1: 0.2, 2: 0.2, 4: 0.2, 5: 0.2, 20: 0.2},
+    'surprise': {1: 0.3, 2: 0.3, 5: 0.2, 26: 0.2},
+    'disgust':  {9: 0.5, 15: 0.3, 17: 0.2},
+    'contempt': {12: 0.5, 14: 0.5},
+    'neutral':  {},
+}
+
+
+class EmotionDetector:
+    """
+    Replaces BasicEmotionDetector + CompoundEmotionDetector +
+    EmotionTimelineTracker. One class, three modes.
+    """
+    def __init__(self, landmark_provider):
+        self.lp = landmark_provider
+        self.aus = {aid: ActionUnitDetector(aid, landmark_provider)
+                    for aid in AU_CONFIG}
+        self.timeline = deque(maxlen=10000)
+
+    def calibrate(self, neutral_frames):
+        for au in self.aus.values():
+            au.calibrate(neutral_frames)
+
+    def detect(self, frame):
+        au_intensities = {aid: det.detect(frame) for aid, det in self.aus.items()}
+        scores = {}
+        for emotion, weights in EMOTION_AU_MAP.items():
+            if not weights:
+                scores[emotion] = 0.1  # neutral floor
+                continue
+            scores[emotion] = sum(au_intensities.get(a, 0) * w
+                                  for a, w in weights.items())
+        total = sum(scores.values()) or 1
+        probs = {e: s / total for e, s in scores.items()}
+        result = {'probs': probs, 'aus': au_intensities,
+                  'top': max(probs, key=probs.get), 'ts': datetime.now()}
+        self.timeline.append(result)
+        return result
+
+    def compound(self, frame):
+        """Compound emotion (e.g. happily-surprised) — top 2 above threshold."""
+        r = self.detect(frame)
+        sorted_e = sorted(r['probs'].items(), key=lambda x: -x[1])
+        if len(sorted_e) >= 2 and sorted_e[1][1] > 0.2:
+            return f"{sorted_e[0][0]}-{sorted_e[1][0]}"
+        return sorted_e[0][0]
+
+    def emotion_window(self, seconds=5):
+        cutoff = datetime.now() - timedelta(seconds=seconds)
+        return [r for r in self.timeline if r['ts'] >= cutoff]
+
+
+class MicroExpressionDetector:
+    """Detects micro-expressions: AU bursts < 500ms."""
+    def __init__(self, emotion_detector, frame_rate=30):
+        self.ed = emotion_detector
+        self.frame_rate = frame_rate
+        self.buffer = deque(maxlen=frame_rate * 2)  # last 2s
+
+    def update(self, frame):
+        result = self.ed.detect(frame)
+        self.buffer.append(result)
+        return self._scan_for_micro()
+
+    def _scan_for_micro(self):
+        """Look for AU rapid onset+offset within 500ms."""
+        if len(self.buffer) < 5:
+            return None
+        recent = list(self.buffer)[-int(self.frame_rate * 0.5):]
+        for au_id in AU_CONFIG:
+            intensities = [r['aus'].get(au_id, 0) for r in recent]
+            if not intensities:
+                continue
+            peak = max(intensities)
+            baseline = min(intensities[0], intensities[-1])
+            if peak > 0.4 and (peak - baseline) > 0.3:
+                return {'au': au_id, 'peak': peak,
+                        'duration_ms': len(recent) * 1000 / self.frame_rate,
+                        'ts': datetime.now()}
+        return None
+
+
+# ═══════════════════════════════════════════════════════════════
+# 3. PREDICTION ENGINE — Markov + LSTM + Bayesian fusion
+# ═══════════════════════════════════════════════════════════════
+
+class MarkovPredictor:
+    """N-th order Markov chain for next-action prediction."""
+    def __init__(self, order=2):
+        self.order = order
+        self.transitions = defaultdict(lambda: defaultdict(int))
+
+    def train(self, sequence):
+        for i in range(len(sequence) - self.order):
+            state = tuple(sequence[i:i + self.order])
+            nxt = sequence[i + self.order]
+            self.transitions[state][nxt] += 1
+
+    def predict(self, recent):
+        state = tuple(recent[-self.order:])
+        opts = self.transitions.get(state, {})
+        total = sum(opts.values())
+        if not total:
+            return {}
+        return {a: c / total for a, c in opts.items()}
+
+
+class LSTMSequencePredictor:
+    """
+    Sequence model. Stub for an LSTM/Transformer — production
+    plugs in PyTorch/TensorFlow weights here.
+    """
+    def __init__(self, vocab_size=1000, hidden=128, context=20):
+        self.vocab_size = vocab_size
+        self.hidden = hidden
+        self.context = context
+        self.weights = None  # loaded from file in production
+        self.app_to_id = {}
+        self.id_to_app = {}
+
+    def _id(self, app):
+        if app not in self.app_to_id:
+            i = len(self.app_to_id)
+            self.app_to_id[app] = i
+            self.id_to_app[i] = app
+        return self.app_to_id[app]
+
+    def predict(self, recent_apps):
+        # Stub: returns uniform over recent unique apps. Real impl
+        # runs forward pass through LSTM.
+        if not recent_apps:
+            return {}
+        unique = list(dict.fromkeys(recent_apps))[-self.context:]
+        return {a: 1 / len(unique) for a in unique}
+
+
+class BayesianCombiner:
+    """
+    Fuses signals from multiple predictors (Markov, LSTM, time-of-day,
+    emotion, location) using weighted Bayesian update.
+    """
+    def __init__(self):
+        self.weights = {'markov': 0.25, 'lstm': 0.30, 'temporal': 0.20,
+                        'emotion': 0.10, 'location': 0.10, 'frequency': 0.05}
+        self.history = deque(maxlen=1000)
+
+    def combine(self, signals):
+        """signals: dict of {source: {action: prob}}"""
+        all_actions = set()
+        for s in signals.values():
+            all_actions.update(s.keys())
+        if not all_actions:
+            return {}
+        combined = {}
+        for action in all_actions:
+            score = 0
+            total_w = 0
+            for src, dist in signals.items():
+                w = self.weights.get(src, 0.1)
+                score += w * dist.get(action, 0)
+                total_w += w
+            combined[action] = score / total_w if total_w else 0
+        total = sum(combined.values()) or 1
+        result = {a: p / total for a, p in combined.items()}
+        self.history.append({'ts': datetime.now(), 'result': result,
+                             'sources': list(signals.keys())})
+        return result
+
+    def top_predictions(self, signals, n=5):
+        ranked = sorted(self.combine(signals).items(), key=lambda x: -x[1])
+        return ranked[:n]
+
+    def update_weights(self, source, delta):
+        """Reinforcement: bump weight of accurate source."""
+        self.weights[source] = max(0.01, min(0.6, self.weights.get(source, 0.1) + delta))
+        total = sum(self.weights.values())
+        self.weights = {k: v / total for k, v in self.weights.items()}
+
+
+# ═══════════════════════════════════════════════════════════════
+# 4. ACTION ENGINE — staging, approval, pre-loading
+# ═══════════════════════════════════════════════════════════════
+
+class ActionRiskTier(Enum):
+    PASSIVE = 1   # silent execute (preload, cache)
+    LOW = 2       # subtle indicator
+    MEDIUM = 3    # suggestion card, tap to accept
+    HIGH = 4      # explicit approval required
+    CRITICAL = 5  # double confirmation
+
+
+class ActionType(Enum):
+    APP_PRELOAD = auto(); APP_SWITCH = auto(); APP_DEEP_LINK = auto()
+    CONTENT_PREFETCH = auto(); CONTENT_CACHE = auto(); SEARCH_PREPARE = auto()
+    MESSAGE_DRAFT = auto(); EMAIL_DRAFT = auto(); CALL_PREPARE = auto()
+    REPLY_SUGGEST = auto()
+    ROUTE_CALCULATE = auto(); LOCATION_SUGGEST = auto()
+    SETTING_ADJUST = auto(); NOTIFICATION_MANAGE = auto()
+    BRIGHTNESS_ADJUST = auto(); VOLUME_ADJUST = auto(); DND_TOGGLE = auto()
+    WIFI_CONNECT = auto(); BLUETOOTH_CONNECT = auto()
+    PAYMENT_PREPARE = auto(); TRANSFER_PREPARE = auto()
+    POST_DRAFT = auto(); STORY_PREPARE = auto(); SHARE_PREPARE = auto()
+    REMINDER_CREATE = auto(); EVENT_CREATE = auto()
+    NOTE_CREATE = auto(); TASK_COMPLETE = auto()
+    MUSIC_QUEUE = auto(); VIDEO_QUEUE = auto(); PHOTO_PREPARE = auto()
+
+
+DEFAULT_RISK = {
+    # PASSIVE
+    ActionType.APP_PRELOAD: ActionRiskTier.PASSIVE,
+    ActionType.CONTENT_PREFETCH: ActionRiskTier.PASSIVE,
+    ActionType.CONTENT_CACHE: ActionRiskTier.PASSIVE,
+    ActionType.ROUTE_CALCULATE: ActionRiskTier.PASSIVE,
+    ActionType.WIFI_CONNECT: ActionRiskTier.PASSIVE,
+    ActionType.BRIGHTNESS_ADJUST: ActionRiskTier.PASSIVE,
+    # LOW
+    ActionType.SEARCH_PREPARE: ActionRiskTier.LOW,
+    ActionType.MUSIC_QUEUE: ActionRiskTier.LOW,
+    ActionType.VIDEO_QUEUE: ActionRiskTier.LOW,
+    ActionType.BLUETOOTH_CONNECT: ActionRiskTier.LOW,
+    ActionType.VOLUME_ADJUST: ActionRiskTier.LOW,
+    # MEDIUM
+    ActionType.APP_SWITCH: ActionRiskTier.MEDIUM,
+    ActionType.APP_DEEP_LINK: ActionRiskTier.MEDIUM,
+    ActionType.REPLY_SUGGEST: ActionRiskTier.MEDIUM,
+    ActionType.LOCATION_SUGGEST: ActionRiskTier.MEDIUM,
+    ActionType.SETTING_ADJUST: ActionRiskTier.MEDIUM,
+    ActionType.NOTIFICATION_MANAGE: ActionRiskTier.MEDIUM,
+    ActionType.DND_TOGGLE: ActionRiskTier.MEDIUM,
+    ActionType.REMINDER_CREATE: ActionRiskTier.MEDIUM,
+    ActionType.NOTE_CREATE: ActionRiskTier.MEDIUM,
+    ActionType.TASK_COMPLETE: ActionRiskTier.MEDIUM,
+    ActionType.PHOTO_PREPARE: ActionRiskTier.MEDIUM,
+    # HIGH
+    ActionType.MESSAGE_DRAFT: ActionRiskTier.HIGH,
+    ActionType.EMAIL_DRAFT: ActionRiskTier.HIGH,
+    ActionType.CALL_PREPARE: ActionRiskTier.HIGH,
+    ActionType.EVENT_CREATE: ActionRiskTier.HIGH,
+    ActionType.SHARE_PREPARE: ActionRiskTier.HIGH,
+    # CRITICAL
+    ActionType.PAYMENT_PREPARE: ActionRiskTier.CRITICAL,
+    ActionType.TRANSFER_PREPARE: ActionRiskTier.CRITICAL,
+    ActionType.POST_DRAFT: ActionRiskTier.CRITICAL,
+    ActionType.STORY_PREPARE: ActionRiskTier.CRITICAL,
+}
+
+
+class StagedAction:
+    """A predicted action prepared but not executed. Lifecycle-tracked."""
+    class Status(Enum):
+        PREDICTED = auto(); PREPARING = auto(); STAGED = auto()
+        PRESENTED = auto(); APPROVED = auto(); CONFIRMED = auto()
+        EXECUTING = auto(); COMPLETED = auto()
+        DISMISSED = auto(); EXPIRED = auto(); CANCELLED = auto(); FAILED = auto()
+
+    def __init__(self, action_type, action_data, confidence,
+                 risk_tier=None, ttl_seconds=300):
+        self.id = str(uuid.uuid4())[:12]
+        self.action_type = action_type
+        self.action_data = action_data
+        self.confidence = confidence
+        self.risk_tier = risk_tier or DEFAULT_RISK.get(action_type, ActionRiskTier.HIGH)
+        self.status = self.Status.PREDICTED
+        self.created_at = datetime.now()
+        self.expires_at = self.created_at + timedelta(seconds=ttl_seconds)
+        self.user_feedback = None
+        self.modification_data = None
+        self.contributing_signals = []
+
+    def is_expired(self):
+        return datetime.now() > self.expires_at
+
+    def is_terminal(self):
+        return self.status in (self.Status.COMPLETED, self.Status.DISMISSED,
+                               self.Status.EXPIRED, self.Status.CANCELLED,
+                               self.Status.FAILED)
+
+    def needs_approval(self):
+        return self.risk_tier.value >= ActionRiskTier.HIGH.value
+
+    def needs_double_confirm(self):
+        return self.risk_tier == ActionRiskTier.CRITICAL
+
+    def approve(self):
+        if self.needs_double_confirm() and self.status != self.Status.APPROVED:
+            self.status = self.Status.APPROVED
+            return 'needs_confirmation'
+        self.status = (self.Status.CONFIRMED if self.needs_double_confirm()
+                       else self.Status.APPROVED)
+        self.user_feedback = 'approved'
+        return 'ready_to_execute'
+
+    def confirm(self):
+        if self.status == self.Status.APPROVED and self.needs_double_confirm():
+            self.status = self.Status.CONFIRMED
+            return 'ready_to_execute'
+        return 'invalid_state'
+
+    def dismiss(self, reason=None):
+        self.status = self.Status.DISMISSED
+        self.user_feedback = 'dismissed'
+
+    def modify_and_approve(self, modifications):
+        self.modification_data = modifications
+        self.action_data.update(modifications)
+        self.user_feedback = 'modified'
+        return self.approve()
+
+    def to_dict(self):
+        return {'id': self.id, 'action': self.action_type.name,
+                'risk': self.risk_tier.name, 'status': self.status.name,
+                'confidence': self.confidence, 'data': self.action_data,
+                'expires_at': self.expires_at.isoformat(),
+                'expired': self.is_expired()}
+
+
+class ApprovalGateway:
+    """The gatekeeper. NO action executes without proper clearance."""
+    def __init__(self):
+        self.staged = OrderedDict()  # id -> StagedAction
+        self.lock = threading.Lock()
+        self.audit_log = deque(maxlen=10000)
+
+    def stage(self, action):
+        with self.lock:
+            self.staged[action.id] = action
+            self._audit('staged', action)
+            return action.id
+
+    def cleanup_expired(self):
+        with self.lock:
+            for aid, a in list(self.staged.items()):
+                if a.is_expired() and not a.is_terminal():
+                    a.status = StagedAction.Status.EXPIRED
+                    self._audit('expired', a)
+
+    def approve(self, action_id):
+        with self.lock:
+            a = self.staged.get(action_id)
+            if not a:
+                return 'not_found'
+            result = a.approve()
+            self._audit('approved', a)
+            return result
+
+    def confirm(self, action_id):
+        with self.lock:
+            a = self.staged.get(action_id)
+            return a.confirm() if a else 'not_found'
+
+    def dismiss(self, action_id, reason=None):
+        with self.lock:
+            a = self.staged.get(action_id)
+            if a:
+                a.dismiss(reason)
+                self._audit('dismissed', a)
+
+    def list_pending(self):
+        return [a for a in self.staged.values() if not a.is_terminal()]
+
+    def _audit(self, event, action):
+        self.audit_log.append({'ts': datetime.now(), 'event': event,
+                               'id': action.id, 'type': action.action_type.name})
+
+
+class PreloadLevel(Enum):
+    HOT = 1   # full memory load
+    WARM = 2  # cached resources
+    COLD = 3  # metadata only
+
+
+class AppPreLoader:
+    """Pre-loads apps into memory based on prediction confidence."""
+    def __init__(self, max_hot=3, max_warm=8):
+        self.max_hot = max_hot
+        self.max_warm = max_warm
+        self.loaded = OrderedDict()  # app -> PreloadLevel
+
+    def preload(self, app, confidence):
+        if confidence >= 0.7:
+            level = PreloadLevel.HOT
+        elif confidence >= 0.4:
+            level = PreloadLevel.WARM
+        else:
+            level = PreloadLevel.COLD
+        self.loaded[app] = level
+        self.loaded.move_to_end(app)
+        self._enforce_limits()
+
+    def _enforce_limits(self):
+        hot = [a for a, l in self.loaded.items() if l == PreloadLevel.HOT]
+        warm = [a for a, l in self.loaded.items() if l == PreloadLevel.WARM]
+        for a in hot[:-self.max_hot]:
+            self.loaded[a] = PreloadLevel.WARM
+        for a in warm[:-self.max_warm]:
+            del self.loaded[a]
+
+    def evict(self, app):
+        self.loaded.pop(app, None)
+
+    def status(self):
+        return {a: l.name for a, l in self.loaded.items()}
+
+
+class MessagePreTyper:
+    """Drafts message text before user opens the keyboard."""
+    def __init__(self):
+        self.drafts = {}  # contact -> draft text
+
+    def draft(self, contact, context, suggested_text):
+        self.drafts[contact] = {'text': suggested_text, 'context': context,
+                                'created': datetime.now()}
+
+    def get(self, contact):
+        return self.drafts.get(contact)
+
+    def clear(self, contact):
+        self.drafts.pop(contact, None)
+
+
+# ═══════════════════════════════════════════════════════════════
+# 5. PRIVACY ENGINE — on-device, encrypted, auditable
+# ═══════════════════════════════════════════════════════════════
+
+class DataSensitivity(Enum):
+    PUBLIC = 1; INTERNAL = 2; SENSITIVE = 3; HIGHLY_SENSITIVE = 4; BIOMETRIC = 5
+
+
+class DataCategory(Enum):
+    APP_USAGE = auto(); LOCATION = auto(); FACIAL = auto(); RETINAL = auto()
+    KEYSTROKES = auto(); MESSAGES = auto(); CONTACTS = auto()
+    HEALTH = auto(); FINANCIAL = auto(); PHOTOS = auto()
+
+
+SENSITIVITY_MAP = {
+    DataCategory.APP_USAGE: DataSensitivity.INTERNAL,
+    DataCategory.LOCATION: DataSensitivity.SENSITIVE,
+    DataCategory.FACIAL: DataSensitivity.BIOMETRIC,
+    DataCategory.RETINAL: DataSensitivity.BIOMETRIC,
+    DataCategory.KEYSTROKES: DataSensitivity.HIGHLY_SENSITIVE,
+    DataCategory.MESSAGES: DataSensitivity.HIGHLY_SENSITIVE,
+    DataCategory.CONTACTS: DataSensitivity.SENSITIVE,
+    DataCategory.HEALTH: DataSensitivity.HIGHLY_SENSITIVE,
+    DataCategory.FINANCIAL: DataSensitivity.HIGHLY_SENSITIVE,
+    DataCategory.PHOTOS: DataSensitivity.SENSITIVE,
+}
+
+
+class OnDeviceEnforcer:
+    """Hard rule: BIOMETRIC + HIGHLY_SENSITIVE never leave the device."""
+    NEVER_LEAVE_DEVICE = {DataSensitivity.BIOMETRIC, DataSensitivity.HIGHLY_SENSITIVE}
+
+    def __init__(self):
+        self.violations = deque(maxlen=1000)
+
+    def can_transmit(self, category):
+        sens = SENSITIVITY_MAP.get(category, DataSensitivity.SENSITIVE)
+        if sens in self.NEVER_LEAVE_DEVICE:
+            self.violations.append({'ts': datetime.now(), 'category': category.name,
+                                    'blocked': True})
+            return False
+        return True
+
+    def request_data_access(self, category, purpose):
+        if not self.can_transmit(category):
+            return {'granted': False, 'reason': 'on_device_only'}
+        return {'granted': True, 'purpose': purpose, 'ts': datetime.now()}
+
+
+class LocalEncryptionManager:
+    """Per-category AES-GCM keys derived from master key."""
+    def __init__(self):
+        self.master_key = self._get_master_key()
+        self.keys = self._initialize_all_keys()
+        self.audit = deque(maxlen=10000)
+
+    def _get_master_key(self):
+        # Production: pull from secure enclave / Keychain / TEE
+        return secrets.token_bytes(32)
+
+    def _derive_key(self, category):
+        return hmac.new(self.master_key, category.name.encode(), hashlib.sha256).digest()
+
+    def _initialize_all_keys(self):
+        return {c: self._derive_key(c) for c in DataCategory}
+
+    def encrypt(self, category, plaintext_bytes):
+        key = self.keys[category]
+        nonce = secrets.token_bytes(12)
+        # Stub: production uses cryptography.hazmat AES-GCM
+        ct = bytes(b ^ key[i % 32] for i, b in enumerate(plaintext_bytes))
+        self._log('encrypt', category)
+        return base64.b64encode(nonce + ct).decode()
+
+    def decrypt(self, category, ciphertext_b64):
+        data = base64.b64decode(ciphertext_b64)
+        nonce, ct = data[:12], data[12:]
+        key = self.keys[category]
+        pt = bytes(b ^ key[i % 32] for i, b in enumerate(ct))
+        self._log('decrypt', category)
+        return pt
+
+    def _log(self, op, category):
+        self.audit.append({'ts': datetime.now(), 'op': op, 'cat': category.name})
+
+    def get_security_report(self):
+        ops = defaultdict(int)
+        for e in self.audit:
+            ops[e['op']] += 1
+        return {'total_ops': len(self.audit), 'by_op': dict(ops),
+                'categories_active': len(self.keys)}
+
+
+# ═══════════════════════════════════════════════════════════════
+# 6. UX ENGINE — how predictions are shown
+# ═══════════════════════════════════════════════════════════════
+
+class PresentationMode(Enum):
+    INVISIBLE = 1   # passive: no UI
+    SUBTLE = 2      # tiny indicator
+    CARD = 3        # suggestion card
+    MODAL = 4       # full approval dialog
+
+
+class PresentationPriority(Enum):
+    BACKGROUND = 1; LOW = 2; NORMAL = 3; HIGH = 4; URGENT = 5
+
+
+class SuggestionRenderer:
+    """Renders staged actions to the appropriate UI surface."""
+    TIER_TO_MODE = {
+        ActionRiskTier.PASSIVE: PresentationMode.INVISIBLE,
+        ActionRiskTier.LOW: PresentationMode.SUBTLE,
+        ActionRiskTier.MEDIUM: PresentationMode.CARD,
+        ActionRiskTier.HIGH: PresentationMode.MODAL,
+        ActionRiskTier.CRITICAL: PresentationMode.MODAL,
+    }
+
+    def __init__(self):
+        self.active_surfaces = {}  # action_id -> rendered repr
+
+    def render(self, action):
+        mode = self.TIER_TO_MODE[action.risk_tier]
+        priority = (PresentationPriority.URGENT if action.confidence > 0.85
+                    else PresentationPriority.HIGH if action.confidence > 0.65
+                    else PresentationPriority.NORMAL)
+        surface = {'id': action.id, 'mode': mode.name,
+                   'priority': priority.name,
+                   'title': action.action_type.name.replace('_', ' ').title(),
+                   'data': action.action_data,
+                   'requires_tap': action.needs_approval(),
+                   'requires_double': action.needs_double_confirm()}
+        self.active_surfaces[action.id] = surface
+        return surface
+
+    def dismiss(self, action_id):
+        self.active_surfaces.pop(action_id, None)
+
+
+# ═══════════════════════════════════════════════════════════════
+# 7. ORCHESTRATOR — wires everything together
+# ═══════════════════════════════════════════════════════════════
+
+class SystemState(Enum):
+    UNINITIALIZED = auto(); ONBOARDING = auto(); LEARNING = auto()
+    PREDICTING = auto(); MATURE = auto(); PAUSED = auto()
+    DEGRADED = auto(); EMERGENCY_STOP = auto()
+    MAINTENANCE = auto(); SHUTTING_DOWN = auto()
+
+
+class SystemPhase(Enum):
+    OBSERVATION_ONLY = auto(); TENTATIVE_PASSIVE = auto()
+    EXPANDING_SIGNALS = auto(); FULL_PREDICTION = auto(); REFINEMENT = auto()
+
+
+VALID_TRANSITIONS = {
+    SystemState.UNINITIALIZED: {SystemState.ONBOARDING},
+    SystemState.ONBOARDING: {SystemState.LEARNING, SystemState.SHUTTING_DOWN},
+    SystemState.LEARNING: {SystemState.PREDICTING, SystemState.PAUSED,
+                           SystemState.DEGRADED, SystemState.EMERGENCY_STOP,
+                           SystemState.MAINTENANCE, SystemState.SHUTTING_DOWN},
+    SystemState.PREDICTING: {SystemState.MATURE, SystemState.PAUSED,
+                             SystemState.DEGRADED, SystemState.EMERGENCY_STOP,
+                             SystemState.MAINTENANCE, SystemState.LEARNING,
+                             SystemState.SHUTTING_DOWN},
+    SystemState.MATURE: {SystemState.PAUSED, SystemState.DEGRADED,
+                         SystemState.EMERGENCY_STOP, SystemState.MAINTENANCE,
+                         SystemState.PREDICTING, SystemState.SHUTTING_DOWN},
+    SystemState.PAUSED: {SystemState.LEARNING, SystemState.PREDICTING,
+                         SystemState.MATURE, SystemState.EMERGENCY_STOP,
+                         SystemState.SHUTTING_DOWN},
+    SystemState.DEGRADED: {SystemState.PREDICTING, SystemState.MATURE,
+                           SystemState.EMERGENCY_STOP, SystemState.MAINTENANCE,
+                           SystemState.SHUTTING_DOWN},
+    SystemState.EMERGENCY_STOP: {SystemState.UNINITIALIZED, SystemState.SHUTTING_DOWN},
+    SystemState.MAINTENANCE: {SystemState.LEARNING, SystemState.PREDICTING,
+                              SystemState.MATURE, SystemState.EMERGENCY_STOP,
+                              SystemState.SHUTTING_DOWN},
+    SystemState.SHUTTING_DOWN: set(),
+}
+
+
+class IntentionPredictionOrchestrator:
+    """Top-level controller. Wires every engine together."""
+    def __init__(self):
+        # Behavioral
+        self.events = EventStore()
+        self.swipes = SwipePatternTracker()
+        self.notifications = NotificationTracker()
+        self.wifi = WiFiLocationContext()
+        # Facial
+        self.landmarks = FaceLandmarkProvider()
+        self.emotions = EmotionDetector(self.landmarks)
+        self.micro = MicroExpressionDetector(self.emotions)
+        # Prediction
+        self.markov = MarkovPredictor(order=2)
+        self.lstm = LSTMSequencePredictor()
+        self.combiner = BayesianCombiner()
+        # Action
+        self.gateway = ApprovalGateway()
+        self.preloader = AppPreLoader()
+        self.pretyper = MessagePreTyper()
+        # Privacy
+        self.privacy = OnDeviceEnforcer()
+        self.crypto = LocalEncryptionManager()
+        # UX
+        self.renderer = SuggestionRenderer()
+        # State
+        self.state = SystemState.UNINITIALIZED
+        self.phase = SystemPhase.OBSERVATION_ONLY
+        self.started_at = None
+        self.metrics = defaultdict(int)
+
+    def transition(self, new_state):
+        if new_state in VALID_TRANSITIONS.get(self.state, set()):
+            self.state = new_state
+            return True
+        return False
+
+    def initialize(self):
+        self.transition(SystemState.ONBOARDING)
+        self.started_at = datetime.now()
+
+    def begin_learning(self):
+        self.transition(SystemState.LEARNING)
+
+    def predict_next(self):
+        """Run all predictors, fuse, return top suggestions."""
+        recent = self.events.last_n_apps(20)
+        signals = {
+            'markov': self.markov.predict(recent),
+            'lstm': self.lstm.predict(recent),
+            'temporal': self.events.slot_prediction(),
+            'frequency': dict(self.events.top_apps(10)),
+        }
+        return self.combiner.top_predictions(signals, n=5)
+
+    def stage_action(self, action_type, data, confidence):
+        action = StagedAction(action_type, data, confidence)
+        self.gateway.stage(action)
+        if action.action_type == ActionType.APP_PRELOAD:
+            self.preloader.preload(data.get('app'), confidence)
+        self.renderer.render(action)
+        self.metrics['actions_staged'] += 1
+        return action
+
+    def health_report(self):
+        return {
+            'state': self.state.name,
+            'phase': self.phase.name,
+            'uptime_s': (datetime.now() - self.started_at).total_seconds()
+                        if self.started_at else 0,
+            'events_recorded': len(self.events.events),
+            'pending_actions': len(self.gateway.list_pending()),
+            'apps_preloaded': len(self.preloader.loaded),
+            'metrics': dict(self.metrics),
+            'security': self.crypto.get_security_report(),
+        }
+
+    def emergency_stop(self):
+        self.transition(SystemState.EMERGENCY_STOP)
+        self.gateway.staged.clear()
+        self.preloader.loaded.clear()
+
+
+# ═══════════════════════════════════════════════════════════════
+# Quick smoke test
+# ═══════════════════════════════════════════════════════════════
+if __name__ == '__main__':
+    o = IntentionPredictionOrchestrator()
+    o.initialize()
+    o.begin_learning()
+    for app in ['mail', 'browser', 'mail', 'slack', 'browser', 'mail', 'slack']:
+        o.events.app_opened(app)
+    print("Top apps:", o.events.top_apps(3))
+    print("Predictions:", o.predict_next())
+    print("Health:", o.health_report())
+`;
+
+function loadIPICode(){
+  const inv = getCurrentInv();
+  if(!inv){ alert('Please select the Intention Prediction Interface invention first.'); return; }
+  showConfirm('Replace current code with full IPI Python code (971 lines, 7 engines)?', ()=>{
+    inv.code = IPI_CODE;
+    inv.version += 1;
+    inv.versions.push({v:inv.version, desc:'IPI Python code loaded — 971 lines, 7 engines'});
+    saveInventions();
+    renderCoding(inv);
+    updateRightPanel(inv);
+    renderInvList();
+    document.getElementById('currentVerTag').textContent = 'v' + inv.version;
+    switchPage('coding');
+    addSystemMsg('✅ Full IPI Python code loaded! 971 lines, 7 engines. Check the CODING tab.');
+  });
+}
+
 </script>
 </body>
 </html>
