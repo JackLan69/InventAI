@@ -290,6 +290,7 @@ nav::-webkit-scrollbar{height:2px;}
 
 /* API NOTICE */
 .api-notice{background:linear-gradient(135deg,rgba(255,200,68,0.07),rgba(255,200,68,0.02));border-bottom:1px solid rgba(255,200,68,0.25);padding:10px 20px;flex-shrink:0;font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;color:var(--gold);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.hidden{display:none!important;}
 .api-notice.hidden{display:none;}
 .api-key-input{flex:1;min-width:200px;background:transparent;border:none;border-bottom:1px solid rgba(255,200,68,0.4);color:var(--gold);font-family:'Share Tech Mono',monospace;font-size:11px;padding:2px 6px;outline:none;}
 .api-key-input::placeholder{color:rgba(255,200,68,0.3);}
@@ -334,6 +335,75 @@ nav::-webkit-scrollbar{height:2px;}
 .confirm-actions{display:flex;gap:8px;justify-content:center;}
 .mbtn-delete{background:linear-gradient(135deg,rgba(255,45,120,0.15),rgba(255,45,120,0.08));border:1px solid rgba(255,45,120,0.5);color:var(--neon2);}
 .mbtn-delete:hover{background:linear-gradient(135deg,rgba(255,45,120,0.3),rgba(255,45,120,0.15));box-shadow:var(--glow-r);}
+
+
+/* ═══ NEW FEATURES CSS ═══ */
+
+/* AUTO-SAVE INDICATOR */
+.save-indicator{position:fixed;bottom:18px;right:24px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:5px 12px;background:rgba(57,255,133,0.08);border:1px solid rgba(57,255,133,0.25);color:var(--neon3);z-index:500;opacity:0;transition:opacity 0.4s;pointer-events:none;}
+.save-indicator.show{opacity:1;}
+
+/* SEARCH BAR */
+.chat-search{display:flex;align-items:center;gap:8px;padding:7px 14px;background:rgba(0,238,255,0.04);border-bottom:1px solid var(--border);flex-shrink:0;}
+.chat-search input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--border2);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 8px;outline:none;}
+.chat-search input::placeholder{color:var(--text3);}
+.search-count{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);}
+.msg.search-highlight .msg-bubble{outline:2px solid rgba(255,200,68,0.5);background:rgba(255,200,68,0.05);}
+
+/* QUICK NOTES */
+.notes-panel{position:fixed;right:0;top:66px;width:280px;height:calc(100vh - 66px);background:linear-gradient(180deg,var(--metal2),var(--metal3));border-left:1px solid var(--border2);z-index:200;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);display:flex;flex-direction:column;}
+.notes-panel.open{transform:translateX(0);}
+.notes-header{padding:14px 16px;border-bottom:1px solid var(--border2);font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--neon);display:flex;align-items:center;justify-content:space-between;}
+.notes-close{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:14px;transition:color 0.2s;}
+.notes-close:hover{color:var(--neon2);}
+.notes-textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.7;padding:14px 16px;resize:none;}
+.notes-footer{padding:10px 16px;border-top:1px solid var(--border2);display:flex;gap:8px;}
+
+/* CHECKLIST */
+.checklist-panel{padding:16px;}
+.check-item{display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:6px;background:rgba(0,238,255,0.03);border:1px solid var(--border);cursor:pointer;transition:all 0.2s;}
+.check-item:hover{border-color:var(--border2);}
+.check-item.done{background:rgba(57,255,133,0.04);border-color:rgba(57,255,133,0.2);}
+.check-box{width:14px;height:14px;border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;}
+.check-item.done .check-box{background:rgba(57,255,133,0.2);border-color:var(--neon3);color:var(--neon3);}
+.check-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);}
+.check-item.done .check-label{color:var(--neon3);text-decoration:line-through;}
+
+/* TAGS */
+.inv-tag{font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 7px;border-radius:0;cursor:pointer;transition:all 0.2s;}
+.tag-inprogress{background:rgba(255,200,68,0.1);border:1px solid rgba(255,200,68,0.3);color:var(--gold);}
+.tag-patent{background:rgba(0,238,255,0.1);border:1px solid rgba(0,238,255,0.3);color:var(--neon);}
+.tag-complete{background:rgba(57,255,133,0.1);border:1px solid rgba(57,255,133,0.3);color:var(--neon3);}
+.tag-forsale{background:rgba(200,61,255,0.1);border:1px solid rgba(200,61,255,0.3);color:var(--neon4);}
+.tag-sold{background:rgba(255,45,120,0.1);border:1px solid rgba(255,45,120,0.3);color:var(--neon2);}
+
+/* AGENTS PAGE */
+.agents-page{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:14px;}
+.agent-msg{padding:14px 18px;border-left:3px solid;position:relative;}
+.agent-msg.inventor{border-color:var(--neon);background:rgba(0,238,255,0.04);}
+.agent-msg.researcher{border-color:var(--neon3);background:rgba(57,255,133,0.04);}
+.agent-msg.critic{border-color:var(--neon2);background:rgba(255,45,120,0.04);}
+.agent-msg.refiner{border-color:var(--gold);background:rgba(255,200,68,0.04);}
+.agent-name{font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;margin-bottom:8px;}
+.agent-msg.inventor .agent-name{color:var(--neon);}
+.agent-msg.researcher .agent-name{color:var(--neon3);}
+.agent-msg.critic .agent-name{color:var(--neon2);}
+.agent-msg.refiner .agent-name{color:var(--gold);}
+.agent-text{font-size:12px;line-height:1.7;color:var(--text);}
+
+/* FILE UPLOAD */
+.file-upload-btn{display:none;}
+.upload-label{cursor:pointer;}
+
+/* PROGRESS BAR */
+.inv-progress{height:2px;background:var(--border);margin-top:4px;}
+.inv-progress-fill{height:100%;background:linear-gradient(90deg,var(--neon),var(--neon4));transition:width 0.4s;}
+
+/* UNDO TOAST */
+.undo-toast{position:fixed;bottom:60px;right:24px;background:linear-gradient(135deg,var(--metal2),var(--metal3));border:1px solid rgba(255,200,68,0.4);color:var(--gold);font-family:'Share Tech Mono',monospace;font-size:10px;padding:10px 16px;z-index:600;display:flex;align-items:center;gap:12px;transform:translateY(20px);opacity:0;transition:all 0.3s;pointer-events:none;}
+.undo-toast.show{transform:translateY(0);opacity:1;pointer-events:all;}
+.undo-btn{background:transparent;border:1px solid rgba(255,200,68,0.4);color:var(--gold);font-family:'Chakra Petch',sans-serif;font-size:9px;letter-spacing:2px;padding:3px 10px;cursor:pointer;}
+.undo-btn:hover{background:rgba(255,200,68,0.1);}
 
 /* CODE EDITOR */
 .code-editor-wrap{display:flex;flex:1;overflow:hidden;background:rgba(0,0,0,0.3);border:1px solid rgba(0,238,255,0.15);font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.6;}
@@ -383,6 +453,32 @@ const APP_PASSWORD='inventai2026';
 function checkPassword(){const v=document.getElementById('lockInput').value;if(v===APP_PASSWORD){document.getElementById('lockscreen').classList.add('unlocked');sessionStorage.setItem('inv_auth','1');}else{const e=document.getElementById('lockError');e.classList.add('show');document.getElementById('lockInput').value='';setTimeout(()=>e.classList.remove('show'),2000);}}
 if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen').classList.add('unlocked');
 </script>
+<!-- AUTO-SAVE INDICATOR -->
+<div class="save-indicator" id="saveIndicator">✓ SAVED</div>
+
+<!-- UNDO TOAST -->
+<div class="undo-toast" id="undoToast">
+  <span id="undoMsg">Action undone</span>
+  <button class="undo-btn" onclick="doUndo()">↩ UNDO</button>
+</div>
+
+<!-- QUICK NOTES PANEL -->
+<div class="notes-panel" id="notesPanel">
+  <div class="notes-header">
+    📝 QUICK NOTES
+    <button class="notes-close" onclick="toggleNotes()">✕</button>
+  </div>
+  <textarea class="notes-textarea" id="notesArea" placeholder="Type your notes here... ideas, reminders, patent claims, anything." oninput="saveNotes()"></textarea>
+  <div class="notes-footer">
+    <button class="tbtn" style="font-size:9px;" onclick="copyNotes()">📋 COPY</button>
+    <button class="tbtn" style="font-size:9px;border-color:rgba(255,45,120,0.4);color:var(--neon2);" onclick="clearNotes()">🗑 CLEAR</button>
+  </div>
+</div>
+
+<!-- FILE INPUT (hidden) -->
+<input type="file" id="fileUploadInput" class="file-upload-btn" accept=".py,.js,.ts,.txt,.json,.md,.html,.css,.java,.cpp,.c,.swift,.kt,.rs" onchange="handleFileUpload(event)">
+<input type="file" id="fileUploadChat" class="file-upload-btn" accept=".py,.js,.ts,.txt,.json,.md,.html,.css,.java,.cpp,.c,.pdf" onchange="handleFileUploadChat(event)">
+
 <div class="scanline"></div>
 
 <!-- CONFIRM DELETE MODAL -->
@@ -449,7 +545,10 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
     <span class="status-text online" id="statusText">OPUS 4.6 · READY</span>
   </div>
   <div class="header-right">
+    <button class="hbtn hbtn-outline" onclick="toggleNotes()" title="Quick Notes">📝 NOTES</button>
     <button class="hbtn hbtn-outline" onclick="changeApiKey()" title="Change API Key">🔑 API KEY</button>
+    <button class="hbtn hbtn-outline" onclick="exportAllBackup()">💾 BACKUP</button>
+    <button class="hbtn hbtn-outline" onclick="importBackup()">📂 RESTORE</button>
     <button class="hbtn hbtn-outline" onclick="exportPDF()">↗ EXPORT</button>
     <button class="hbtn hbtn-primary" onclick="openModal()">+ NEW INVENTION</button>
   </div>
@@ -464,6 +563,8 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
   <div class="navtab" onclick="switchPage('ideas')" id="tab-ideas">💡 AI IDEAS <span id="ideasBadge" style="display:none;font-size:8px;padding:1px 5px;background:rgba(200,61,255,0.2);border:1px solid rgba(200,61,255,0.4);color:var(--neon4);margin-left:2px;">0</span></div>
   <div class="navtab" onclick="switchPage('coding')" id="tab-coding">💻 CODING</div>
   <div class="navtab" onclick="switchPage('research')" id="tab-research">📡 RESEARCH</div>
+  <div class="navtab" onclick="switchPage('agents')" id="tab-agents">🤖 AGENTS</div>
+  <div class="navtab" onclick="switchPage('checklist')" id="tab-checklist">✅ CHECKLIST</div>
 </nav>
 
 <div class="app-body">
@@ -503,6 +604,12 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
           <button class="tbtn" style="border-color:rgba(255,45,120,0.4);color:var(--neon2);" onclick="clearAllMessages()">🗑 CLEAR CHAT</button>
         </div>
       </div>
+      <div class="chat-search hidden" id="chatSearch">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search messages..." oninput="searchMessages(this.value)" />
+        <span class="search-count" id="searchCount"></span>
+        <button class="tbtn" style="font-size:9px;padding:3px 8px;" onclick="toggleSearch()">✕</button>
+      </div>
       <div class="messages" id="messages">
         <div class="msg">
           <div class="msg-av system">⬡</div>
@@ -515,9 +622,10 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
       <div class="input-zone">
         <div class="attach-row">
           <button class="abtn" onclick="attachURL()">🔗 PASTE URL</button>
-          <button class="abtn" onclick="attachImage()">🖼️ ADD IMAGE</button>
+          <button class="abtn" onclick="document.getElementById('fileUploadChat').click()">📁 UPLOAD FILE</button>
           <button class="abtn" onclick="attachData()">📊 RAW DATA</button>
           <button class="abtn" onclick="toggleMic()">🎤 VOICE</button>
+          <button class="abtn" onclick="toggleSearch()">🔍 SEARCH</button>
         </div>
         <div class="input-row">
           <textarea class="main-input" id="mainInput" placeholder="Describe your invention idea, paste a URL, ask a question, or provide reference material..." rows="2" onkeydown="handleKey(event)"></textarea>
@@ -604,6 +712,7 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
         <button class="tbtn" onclick="switchPage('chat');setTimeout(()=>askFollowup('Generate the database schema for this invention'),100)">🗄️ DATABASE</button>
         <button class="tbtn" onclick="copyCode()">📋 COPY ALL CODE</button>
         <button class="tbtn" style="border-color:rgba(57,255,133,0.4);color:var(--neon3);background:rgba(57,255,133,0.06);" onclick="openPastePanel()">📥 PASTE CODE FROM CHAT</button>
+        <button class="tbtn" style="border-color:rgba(57,255,133,0.4);color:var(--neon3);" onclick="document.getElementById('fileUploadInput').click()">📁 UPLOAD FILE</button>
         <button class="tbtn" style="border-color:rgba(200,61,255,0.4);color:var(--neon4);background:rgba(200,61,255,0.06);" onclick="loadIPICode()">🐍 LOAD IPI CODE</button>
         <button class="tbtn" style="border-color:rgba(255,45,120,0.4);color:var(--neon2);background:rgba(255,45,120,0.06);" onclick="clearCode()">🗑 CLEAR ALL CODE</button>
       </div>
@@ -637,6 +746,47 @@ if(sessionStorage.getItem('inv_auth')==='1')document.getElementById('lockscreen'
       </div>
       <div style="flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:16px;" id="researchContent">
         <div class="bp-empty">📡 NO RESEARCH YET<br><br>Click REFRESH RESEARCH to automatically search all databases<br>for patents, papers, engineering research, market data and news<br>related to your current invention.</div>
+      </div>
+    </div>
+
+    <!-- AGENTS PAGE -->
+    <div class="page" id="page-agents">
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border2);background:linear-gradient(135deg,var(--metal1),var(--metal2));display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;flex-shrink:0;">
+        <div>
+          <div style="font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--neon4);text-shadow:0 0 12px rgba(200,61,255,0.5);">🤖 MULTI-AGENT DEBATE COUNCIL</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px;">4 AI agents debate your invention to make it stronger</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="tbtn active-btn" style="border-color:rgba(200,61,255,0.5);color:var(--neon4);" onclick="runAgentDebate()">🤖 CONVENE COUNCIL</button>
+          <button class="tbtn" onclick="runPatentClaims()">📜 PATENT CLAIMS</button>
+          <button class="tbtn" onclick="runCompetitorAnalysis()">🔬 COMPETITORS</button>
+          <button class="tbtn" onclick="runPitchDeck()">🚀 PITCH DECK</button>
+          <button class="tbtn" style="border-color:rgba(255,45,120,0.4);color:var(--neon2);" onclick="clearAgents()">🗑 CLEAR</button>
+        </div>
+      </div>
+      <div class="agents-page" id="agentsContent">
+        <div class="bp-empty">🤖 COUNCIL NOT YET CONVENED<br><br>Click CONVENE COUNCIL — four AI agents will debate your invention:<br><br>🔵 INVENTOR — proposes improvements<br>🟢 RESEARCHER — checks prior art and feasibility<br>🔴 CRITIC — attacks every weakness<br>🟡 REFINER — strengthens based on criticism</div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST PAGE -->
+    <div class="page" id="page-checklist">
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border2);background:linear-gradient(135deg,var(--metal1),var(--metal2));display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;flex-shrink:0;">
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--neon3);">✅ INVENTION PROGRESS CHECKLIST</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="tbtn" onclick="resetChecklist()">🔄 RESET ALL</button>
+          <select id="invTagSelect" style="font-family:'Share Tech Mono',monospace;font-size:10px;padding:5px 8px;background:var(--metal3);border:1px solid var(--border2);color:var(--text);outline:none;" onchange="setInvTag(this.value)">
+            <option value="">— SET STATUS TAG —</option>
+            <option value="inprogress">🟡 IN PROGRESS</option>
+            <option value="patent">🔵 PATENT PENDING</option>
+            <option value="complete">🟢 COMPLETE</option>
+            <option value="forsale">🟣 FOR SALE</option>
+            <option value="sold">🔴 SOLD</option>
+          </select>
+        </div>
+      </div>
+      <div style="flex:1;overflow:auto;padding:20px;" id="checklistContent">
+        <div id="checklistPanel" class="checklist-panel"></div>
       </div>
     </div>
 
@@ -795,10 +945,10 @@ let inventions=JSON.parse(localStorage.getItem('inventai_inventions')||'[]');
 let currentInvId=null,isThinking=false,recognition=null,isRecording=false;
 function getCurrentInv(){return inventions.find(i=>i.id===currentInvId)||null;}
 function saveInventions(){localStorage.setItem('inventai_inventions',JSON.stringify(inventions));}
-window.onload=()=>{if(apiKey)document.getElementById('apiNotice').classList.add('hidden');renderInvList();renderDashboard();renderIdeas();updateIdeasBadge();if(inventions.length>0)selectInvention(inventions[0].id);};
+window.onload=()=>{if(apiKey)document.getElementById('apiNotice').classList.add('hidden');renderInvList();renderDashboard();renderIdeas();updateIdeasBadge();if(inventions.length>0)selectInvention(inventions[0].id);const notes=localStorage.getItem('inventai_notes')||'';const na=document.getElementById('notesArea');if(na)na.value=notes;};
 function saveApiKey(){const v=document.getElementById('apiKeyInput').value.trim();if(v.startsWith('sk-')){apiKey=v;localStorage.setItem('inventai_key',apiKey);document.getElementById('apiNotice').classList.add('hidden');addSystemMsg('✅ API key saved. INVENTAI is now fully operational.');}else alert('Please enter a valid Anthropic API key (starts with sk-ant-)');}
 function changeApiKey(){apiKey='';localStorage.removeItem('inventai_key');document.getElementById('apiNotice').classList.remove('hidden');document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyInput').focus();}function setStatus(thinking){isThinking=thinking;const dot=document.getElementById('statusDot'),txt=document.getElementById('statusText'),btn=document.getElementById('sendBtn');if(thinking){dot.className='status-dot thinking';txt.className='status-text thinking';txt.textContent='OPUS 4.6 · THINKING...';btn.disabled=true;}else{dot.className='status-dot online';txt.className='status-text online';txt.textContent='OPUS 4.6 · READY';btn.disabled=false;}}
-function switchPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');document.getElementById('tab-'+n).classList.add('active');if(n==='dashboard')renderDashboard();if(n==='ideas')renderIdeas();if(n==='coding'){const inv=getCurrentInv();if(inv)renderCoding(inv);}if(n==='research'){const inv=getCurrentInv();if(inv&&inv.research)renderResearch(inv);else if(inv)document.getElementById('researchContent').innerHTML='<div class="bp-empty">📡 NO RESEARCH YET<br><br>Click REFRESH RESEARCH to automatically search all databases<br>for patents, papers, engineering research, market data and news<br>related to your current invention.</div>';}}
+function switchPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');document.getElementById('tab-'+n).classList.add('active');if(n==='dashboard')renderDashboard();if(n==='ideas')renderIdeas();if(n==='coding'){const inv=getCurrentInv();if(inv)renderCoding(inv);}if(n==='research'){const inv=getCurrentInv();if(inv&&inv.research)renderResearch(inv);else if(inv)document.getElementById('researchContent').innerHTML='<div class="bp-empty">📡 NO RESEARCH YET<br><br>Click REFRESH RESEARCH to automatically search all databases<br>for patents, papers, engineering research, market data and news<br>related to your current invention.</div>';}if(n==='checklist'){const inv=getCurrentInv();if(inv)renderChecklist(inv);}if(n==='agents'){const inv=getCurrentInv();if(inv&&(inv.agentDebate||inv.patentClaims||inv.competitorAnalysis||inv.pitchDeck)){};}}
 function openModal(){document.getElementById('newModal').classList.remove('hidden');document.getElementById('newInvName').focus();}
 function closeModal(){document.getElementById('newModal').classList.add('hidden');document.getElementById('newInvName').value='';document.getElementById('newInvGoal').value='';}
 function createInvention(){const name=document.getElementById('newInvName').value.trim(),cat=document.getElementById('newInvCat').value,goal=document.getElementById('newInvGoal').value.trim();if(!name){alert('Please enter an invention name.');return;}const inv={id:Date.now().toString(),name,cat,goal,created:new Date().toLocaleDateString(),version:1,messages:[],blueprint:null,manual:null,visualization:null,code:null,research:null,scores:{feasibility:0,market:0,novelty:0,cost:0},patent:0,patentNote:'Analysis pending...',marketVal:'—',marketTags:[],problems:[],keywords:[],versions:[{v:1,desc:'Initial concept'}]};inventions.unshift(inv);saveInventions();closeModal();renderInvList();selectInvention(inv.id);if(goal)setTimeout(()=>{document.getElementById('mainInput').value=goal;sendMessage();},300);// Auto-run research immediately
@@ -813,7 +963,7 @@ function closeConfirm(){document.getElementById('confirmModal').classList.add('h
 function confirmDeleteInvention(id){const inv=inventions.find(i=>i.id===id);if(!inv)return;showConfirm(`Delete "${inv.name}"? This cannot be undone.`,()=>{inventions=inventions.filter(i=>i.id!==id);saveInventions();if(currentInvId===id){currentInvId=null;document.getElementById('currentInvTitle').textContent='SELECT OR CREATE AN INVENTION';document.getElementById('messages').innerHTML='';if(inventions.length>0)selectInvention(inventions[0].id);}renderInvList();renderDashboard();});}
 
 function deleteMessage(msgId){const inv=getCurrentInv();if(!inv)return;showConfirm('Delete this message? This cannot be undone.',()=>{inv.messages=inv.messages.filter(m=>m.id!==msgId);saveInventions();const el=document.getElementById(msgId);if(el)el.remove();});}
-function selectInvention(id){currentInvId=id;renderInvList();const inv=getCurrentInv();if(!inv)return;document.getElementById('currentInvTitle').textContent=inv.name;document.getElementById('currentVerTag').textContent='v'+inv.version;renderMessages(inv);renderBlueprint(inv);renderManual(inv);renderVisualization(inv);renderCoding(inv);if(inv.research)renderResearch(inv);updateRightPanel(inv);}
+function selectInvention(id){currentInvId=id;renderInvList();const inv=getCurrentInv();if(!inv)return;document.getElementById('currentInvTitle').textContent=inv.name;document.getElementById('currentVerTag').textContent='v'+inv.version;renderMessages(inv);renderBlueprint(inv);renderManual(inv);renderVisualization(inv);renderCoding(inv);if(inv.research)renderResearch(inv);renderChecklist(inv);updateRightPanel(inv);}
 function renderMessages(inv){const c=document.getElementById('messages');if(!inv.messages.length){c.innerHTML=`<div class="msg"><div class="msg-av system">⬡</div><div class="msg-body"><div class="msg-meta system">INVENTAI SYSTEM</div><div class="msg-bubble system">Invention <span class="hl">"${inv.name}"</span> created in <span class="hl3">${inv.cat}</span>.<br><br>Describe your concept, paste URLs, or click <span class="hl2">AUTO-INVENT</span> to generate ideas automatically.</div></div></div>`;}else{c.innerHTML=inv.messages.map(m=>renderMsgHTML(m)).join('');}scrollToBottom();}
 function renderMsgHTML(m){
   const ac=m.role==='ai'?'ai':m.role==='system'?'system':'user';
@@ -1339,8 +1489,408 @@ function pasteCodeToPage(){
 }
 
 // ═══════════════════════════════════════════════════════
-// IPI CODE LOADER — Full 971-line Python implementation
+// AUTO-SAVE INDICATOR
 // ═══════════════════════════════════════════════════════
+const _origSave = typeof saveInventions === 'function' ? saveInventions : null;
+function saveInventions(){
+  localStorage.setItem('inventai_inventions',JSON.stringify(inventions));
+  const el=document.getElementById('saveIndicator');
+  if(el){el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800);}
+}
+
+// ═══════════════════════════════════════════════════════
+// UNDO SYSTEM
+// ═══════════════════════════════════════════════════════
+let undoStack=[];
+function pushUndo(label,restoreFn){
+  undoStack.push({label,restoreFn});
+  if(undoStack.length>20)undoStack.shift();
+  showUndoToast(label);
+}
+function showUndoToast(label){
+  const t=document.getElementById('undoToast');
+  const m=document.getElementById('undoMsg');
+  if(t&&m){m.textContent=`Deleted: ${label}`;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),5000);}
+}
+function doUndo(){
+  if(!undoStack.length)return;
+  const last=undoStack.pop();
+  last.restoreFn();
+  document.getElementById('undoToast').classList.remove('show');
+  addSystemMsg('↩ Undone: '+last.label);
+}
+
+// ═══════════════════════════════════════════════════════
+// SEARCH IN CHAT
+// ═══════════════════════════════════════════════════════
+function toggleSearch(){
+  const s=document.getElementById('chatSearch');
+  s.classList.toggle('hidden');
+  if(!s.classList.contains('hidden'))document.getElementById('searchInput').focus();
+  else{searchMessages('');document.getElementById('searchInput').value='';}
+}
+function searchMessages(q){
+  const msgs=document.querySelectorAll('.msg');
+  let count=0;
+  msgs.forEach(m=>{
+    const bubble=m.querySelector('.msg-bubble');
+    if(!bubble)return;
+    const text=bubble.textContent.toLowerCase();
+    if(q&&q.length>1&&text.includes(q.toLowerCase())){m.classList.add('search-highlight');count++;}
+    else m.classList.remove('search-highlight');
+  });
+  const sc=document.getElementById('searchCount');
+  if(sc)sc.textContent=q?`${count} found`:'';
+}
+
+// ═══════════════════════════════════════════════════════
+// QUICK NOTES
+// ═══════════════════════════════════════════════════════
+function toggleNotes(){
+  document.getElementById('notesPanel').classList.toggle('open');
+  const notes=localStorage.getItem('inventai_notes')||'';
+  document.getElementById('notesArea').value=notes;
+}
+function saveNotes(){
+  localStorage.setItem('inventai_notes',document.getElementById('notesArea').value);
+}
+function copyNotes(){
+  const t=document.getElementById('notesArea').value;
+  navigator.clipboard.writeText(t).then(()=>addSystemMsg('✅ Notes copied!'));
+}
+function clearNotes(){
+  showConfirm('Clear all notes?',()=>{
+    document.getElementById('notesArea').value='';
+    localStorage.removeItem('inventai_notes');
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// FILE UPLOAD — TO CODING PAGE
+// ═══════════════════════════════════════════════════════
+function handleFileUpload(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const content=e.target.result;
+    const inv=getCurrentInv();
+    if(!inv)return;
+    const prev=inv.code;
+    inv.code=inv.code?inv.code+'\n\n// ═══ UPLOADED: '+file.name+' ═══\n\n'+content:content;
+    inv.version+=1;
+    inv.versions.push({v:inv.version,desc:'File uploaded: '+file.name});
+    saveInventions();
+    renderCoding(inv);
+    updateRightPanel(inv);
+    renderInvList();
+    document.getElementById('currentVerTag').textContent='v'+inv.version;
+    switchPage('coding');
+    addSystemMsg('✅ File uploaded to Coding page: '+file.name+' ('+Math.round(content.length/1024*10)/10+'KB)');
+    pushUndo('File upload: '+file.name,()=>{inv.code=prev;saveInventions();renderCoding(inv);});
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
+// ═══════════════════════════════════════════════════════
+// FILE UPLOAD — TO CHAT
+// ═══════════════════════════════════════════════════════
+function handleFileUploadChat(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const content=e.target.result;
+    const msg=`I am uploading a file for analysis:\n\nFILENAME: ${file.name}\n\nCONTENT:\n${content.substring(0,6000)}${content.length>6000?'\n\n[... truncated ...]':''}`;
+    document.getElementById('mainInput').value=msg;
+    addSystemMsg('📁 File loaded into chat: '+file.name+'. Click SEND to analyze with AI.');
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
+// Also add upload to coding page button in coding toolbar
+function uploadFileToCoding(){document.getElementById('fileUploadInput').click();}
+
+// ═══════════════════════════════════════════════════════
+// EXPORT ALL BACKUP
+// ═══════════════════════════════════════════════════════
+function exportAllBackup(){
+  const backup={
+    version:'INVENTAI_BACKUP_v1',
+    timestamp:new Date().toISOString(),
+    inventions:inventions,
+    ideas:allIdeas,
+    notes:localStorage.getItem('inventai_notes')||''
+  };
+  const b=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);
+  a.download='INVENTAI_BACKUP_'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+  addSystemMsg('✅ Full backup exported! '+inventions.length+' inventions saved.');
+}
+
+// ═══════════════════════════════════════════════════════
+// IMPORT BACKUP
+// ═══════════════════════════════════════════════════════
+function importBackup(){
+  const input=document.createElement('input');
+  input.type='file';
+  input.accept='.json';
+  input.onchange=e=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const backup=JSON.parse(ev.target.result);
+        if(!backup.version||!backup.version.startsWith('INVENTAI_BACKUP')){
+          alert('Invalid backup file. Please use a file exported from INVENTAI.');return;
+        }
+        showConfirm('Restore backup from '+backup.timestamp.split('T')[0]+'? This will REPLACE all current inventions.',()=>{
+          inventions=backup.inventions||[];
+          allIdeas=backup.ideas||[];
+          if(backup.notes)localStorage.setItem('inventai_notes',backup.notes);
+          saveInventions();
+          saveIdeas();
+          renderInvList();
+          renderDashboard();
+          renderIdeas();
+          updateIdeasBadge();
+          if(inventions.length>0)selectInvention(inventions[0].id);
+          addSystemMsg('✅ Backup restored! '+inventions.length+' inventions loaded from '+backup.timestamp.split('T')[0]);
+        });
+      }catch(err){alert('Error reading backup file: '+err.message);}
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ═══════════════════════════════════════════════════════
+// INVENTION TAGS / STATUS
+// ═══════════════════════════════════════════════════════
+function setInvTag(tag){
+  const inv=getCurrentInv();
+  if(!inv)return;
+  inv.tag=tag;
+  saveInventions();
+  renderInvList();
+  renderChecklist(inv);
+  const sel=document.getElementById('invTagSelect');
+  if(sel)sel.value='';
+}
+
+// ═══════════════════════════════════════════════════════
+// CHECKLIST
+// ═══════════════════════════════════════════════════════
+const CHECKLIST_ITEMS=[
+  {id:'concept',label:'Concept defined'},
+  {id:'goal',label:'Goal and problem stated'},
+  {id:'chat',label:'AI conversation started'},
+  {id:'blueprint',label:'Blueprint generated'},
+  {id:'manual',label:'Manual generated'},
+  {id:'visualization',label:'Visualization generated'},
+  {id:'code',label:'Code generated'},
+  {id:'research',label:'Research completed'},
+  {id:'priorart',label:'Prior art search done'},
+  {id:'market',label:'Market analysis done'},
+  {id:'problems',label:'Problems identified and solved'},
+  {id:'agents',label:'Agent debate completed'},
+  {id:'patent_claims',label:'Patent claims generated'},
+  {id:'competitor',label:'Competitor analysis done'},
+  {id:'pitchdeck',label:'Pitch deck generated'},
+  {id:'provisional',label:'Provisional patent filed'},
+  {id:'export',label:'Report exported and saved'},
+  {id:'backup',label:'Backup created'},
+];
+function renderChecklist(inv){
+  if(!inv)return;
+  const panel=document.getElementById('checklistPanel');
+  if(!panel)return;
+  const checks=inv.checklist||{};
+  // Auto-check based on what exists
+  const auto={
+    concept:!!(inv.name),goal:!!(inv.goal),chat:!!(inv.messages&&inv.messages.length>2),
+    blueprint:!!(inv.blueprint),manual:!!(inv.manual),visualization:!!(inv.visualization),
+    code:!!(inv.code),research:!!(inv.research)
+  };
+  const done=CHECKLIST_ITEMS.filter(i=>checks[i.id]||auto[i.id]).length;
+  const pct=Math.round(done/CHECKLIST_ITEMS.length*100);
+  const tagColors={inprogress:'var(--gold)',patent:'var(--neon)',complete:'var(--neon3)',forsale:'var(--neon4)',sold:'var(--neon2)'};
+  const tagLabels={inprogress:'🟡 IN PROGRESS',patent:'🔵 PATENT PENDING',complete:'🟢 COMPLETE',forsale:'🟣 FOR SALE',sold:'🔴 SOLD'};
+  panel.innerHTML=`
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:11px;letter-spacing:3px;color:var(--neon);">${inv.name}</div>
+        ${inv.tag?`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 10px;border:1px solid ${tagColors[inv.tag]};color:${tagColors[inv.tag]};">${tagLabels[inv.tag]}</span>`:''}
+      </div>
+      <div style="background:var(--border);height:4px;width:100%;margin-bottom:6px;">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--neon),var(--neon3));transition:width 0.6s;"></div>
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text3);">${done}/${CHECKLIST_ITEMS.length} COMPLETE · ${pct}%</div>
+    </div>
+    ${CHECKLIST_ITEMS.map(item=>{
+      const checked=checks[item.id]||auto[item.id];
+      const isAuto=auto[item.id]&&!checks[item.id];
+      return`<div class="check-item ${checked?'done':''}" onclick="toggleCheck('${item.id}')">
+        <div class="check-box">${checked?'✓':''}</div>
+        <div class="check-label">${item.label}${isAuto?' <span style="font-size:8px;color:var(--text3);">(auto)</span>':''}</div>
+      </div>`;
+    }).join('')}
+  `;
+}
+function toggleCheck(itemId){
+  const inv=getCurrentInv();if(!inv)return;
+  if(!inv.checklist)inv.checklist={};
+  inv.checklist[itemId]=!inv.checklist[itemId];
+  saveInventions();
+  renderChecklist(inv);
+}
+function resetChecklist(){
+  const inv=getCurrentInv();if(!inv)return;
+  showConfirm('Reset all manual checklist items?',()=>{
+    inv.checklist={};saveInventions();renderChecklist(inv);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// MULTI-AGENT DEBATE
+// ═══════════════════════════════════════════════════════
+async function runAgentDebate(){
+  if(!apiKey){addSystemMsg('⚠️ Please enter API key first.');return;}
+  const inv=getCurrentInv();if(!inv){alert('Select an invention first.');return;}
+  const el=document.getElementById('agentsContent');
+  el.innerHTML='<div style="padding:20px;font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--neon4);letter-spacing:2px;">🤖 CONVENING COUNCIL...</div>';
+
+  const agents=[
+    {role:'inventor',name:'🔵 INVENTOR AGENT',color:'var(--neon)',prompt:`You are the Inventor Agent. Propose 3 specific, concrete improvements to this invention: "${inv.name}". Be technical and specific. Format as numbered list.`},
+    {role:'researcher',name:'🟢 RESEARCHER AGENT',color:'var(--neon3)',prompt:`You are the Researcher Agent. Review these aspects of "${inv.name}": 1) What similar patents or products exist? 2) Is it technically feasible? 3) What does existing research say? Be specific with examples.`},
+    {role:'critic',name:'🔴 CRITIC AGENT',color:'var(--neon2)',prompt:`You are the Critic Agent. Attack the weaknesses of "${inv.name}" mercilessly. What are the 5 biggest problems? Why might it fail? What are the legal, technical and market risks?`},
+    {role:'refiner',name:'🟡 REFINER AGENT',color:'var(--gold)',prompt:`You are the Refiner Agent. Having heard the Inventor, Researcher and Critic — provide the final strengthened version of "${inv.name}". Address every criticism and produce a battle-tested improved concept.`}
+  ];
+
+  const context=`Invention: "${inv.name}" | Category: ${inv.cat} | Goal: ${inv.goal||'Not specified'} | Blueprint: ${inv.blueprint?inv.blueprint.substring(0,500):'Not generated'}`;
+  el.innerHTML='';
+  let debate='';
+
+  for(const agent of agents){
+    const loadEl=document.createElement('div');
+    loadEl.className=`agent-msg ${agent.role}`;
+    loadEl.innerHTML=`<div class="agent-name">${agent.name}</div><div class="agent-text" style="color:var(--text3);font-size:11px;">THINKING...</div>`;
+    el.appendChild(loadEl);
+    el.scrollTop=el.scrollHeight;
+
+    try{
+      const r=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-opus-4-6',max_tokens:1500,messages:[{role:'user',content:context+'\n\n'+agent.prompt+(debate?'\n\nPrevious agents said:\n'+debate:'')}]})
+      });
+      const d=await r.json();
+      if(d.content&&d.content[0]){
+        const text=d.content[0].text;
+        debate+=`\n\n${agent.name}:\n${text}`;
+        loadEl.querySelector('.agent-text').innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>');
+      }
+    }catch(e){loadEl.querySelector('.agent-text').textContent='Error: '+e.message;}
+    el.scrollTop=el.scrollHeight;
+  }
+  if(inv)inv.agentDebate=debate;
+  saveInventions();
+  addSystemMsg('✅ Agent debate complete! Check the AGENTS tab for the full council discussion.');
+  if(inv&&inv.checklist)inv.checklist.agents=true;
+}
+
+// ═══════════════════════════════════════════════════════
+// PATENT CLAIMS GENERATOR
+// ═══════════════════════════════════════════════════════
+async function runPatentClaims(){
+  if(!apiKey){addSystemMsg('⚠️ Please enter API key first.');return;}
+  const inv=getCurrentInv();if(!inv){alert('Select an invention first.');return;}
+  switchPage('agents');
+  const el=document.getElementById('agentsContent');
+  el.innerHTML='<div style="padding:20px;font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--neon);letter-spacing:2px;">📜 GENERATING PATENT CLAIMS...</div>';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4000,messages:[{role:'user',content:`Generate formal patent claims for this invention:\n\nName: ${inv.name}\nCategory: ${inv.cat}\nGoal: ${inv.goal||''}\nBlueprint: ${inv.blueprint||''}\n\nGenerate:\n1. One independent claim (broadest protection)\n2. 5-8 dependent claims (specific features)\n3. One method claim\n4. One system claim\n\nUse proper patent language format starting with "A system/method/apparatus comprising..."`}]})
+    });
+    const d=await r.json();
+    if(d.content&&d.content[0]){
+      const text=d.content[0].text;
+      el.innerHTML=`<div class="agent-msg inventor"><div class="agent-name">📜 PATENT CLAIMS — ${inv.name.toUpperCase()}</div><div class="agent-text">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>')}</div></div>`;
+      if(inv){inv.patentClaims=text;saveInventions();}
+      if(inv&&inv.checklist)inv.checklist.patent_claims=true;
+      addSystemMsg('✅ Patent claims generated! Check AGENTS tab.');
+    }
+  }catch(e){el.innerHTML=`<div class="bp-empty">⚠️ Error: ${e.message}</div>`;}
+}
+
+// ═══════════════════════════════════════════════════════
+// COMPETITOR ANALYSIS
+// ═══════════════════════════════════════════════════════
+async function runCompetitorAnalysis(){
+  if(!apiKey){addSystemMsg('⚠️ Please enter API key first.');return;}
+  const inv=getCurrentInv();if(!inv){alert('Select an invention first.');return;}
+  switchPage('agents');
+  const el=document.getElementById('agentsContent');
+  el.innerHTML='<div style="padding:20px;font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--neon3);letter-spacing:2px;">🔬 ANALYZING COMPETITORS...</div>';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4000,messages:[{role:'user',content:`Perform a detailed competitor analysis for this invention:\n\nName: ${inv.name}\nCategory: ${inv.cat}\nGoal: ${inv.goal||''}\n\nAnalyze:\n1. TOP 5 direct competitors or similar products\n2. TOP 3 indirect competitors\n3. Our key advantages over each competitor\n4. Our key weaknesses vs each competitor\n5. Market gaps our invention fills that competitors miss\n6. Our unique selling proposition\n7. Recommended positioning strategy`}]})
+    });
+    const d=await r.json();
+    if(d.content&&d.content[0]){
+      const text=d.content[0].text;
+      el.innerHTML=`<div class="agent-msg researcher"><div class="agent-name">🔬 COMPETITOR ANALYSIS — ${inv.name.toUpperCase()}</div><div class="agent-text">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>')}</div></div>`;
+      if(inv){inv.competitorAnalysis=text;saveInventions();}
+      if(inv&&inv.checklist)inv.checklist.competitor=true;
+      addSystemMsg('✅ Competitor analysis complete! Check AGENTS tab.');
+    }
+  }catch(e){el.innerHTML=`<div class="bp-empty">⚠️ Error: ${e.message}</div>`;}
+}
+
+// ═══════════════════════════════════════════════════════
+// PITCH DECK GENERATOR
+// ═══════════════════════════════════════════════════════
+async function runPitchDeck(){
+  if(!apiKey){addSystemMsg('⚠️ Please enter API key first.');return;}
+  const inv=getCurrentInv();if(!inv){alert('Select an invention first.');return;}
+  switchPage('agents');
+  const el=document.getElementById('agentsContent');
+  el.innerHTML='<div style="padding:20px;font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;">🚀 GENERATING PITCH DECK...</div>';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4000,messages:[{role:'user',content:`Generate a complete investor pitch deck content for this invention:\n\nName: ${inv.name}\nCategory: ${inv.cat}\nGoal: ${inv.goal||''}\nMarket Size: ${inv.marketVal||'Unknown'}\nFeasibility: ${inv.scores?.feasibility||0}%\nPatent Readiness: ${inv.patent||0}%\n\nGenerate slide content for:\n1. TITLE SLIDE — name, tagline\n2. PROBLEM — what problem it solves\n3. SOLUTION — how it solves it\n4. PRODUCT — key features and how it works\n5. MARKET — TAM, SAM, SOM analysis\n6. TRACTION — what has been built so far\n7. BUSINESS MODEL — how it makes money\n8. COMPETITION — competitive advantage\n9. TEAM — what kind of team is needed\n10. ASK — what investment is needed and for what\n\nMake it compelling, specific and investor-ready.`}]})
+    });
+    const d=await r.json();
+    if(d.content&&d.content[0]){
+      const text=d.content[0].text;
+      el.innerHTML=`<div class="agent-msg refiner"><div class="agent-name">🚀 INVESTOR PITCH DECK — ${inv.name.toUpperCase()}</div><div class="agent-text">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<span class="hl">$1</span>')}</div></div>`;
+      if(inv){inv.pitchDeck=text;saveInventions();}
+      if(inv&&inv.checklist)inv.checklist.pitchdeck=true;
+      addSystemMsg('✅ Pitch deck generated! Check AGENTS tab.');
+    }
+  }catch(e){el.innerHTML=`<div class="bp-empty">⚠️ Error: ${e.message}</div>`;}
+}
+
+function clearAgents(){
+  showConfirm('Clear the Agents page?',()=>{
+    const inv=getCurrentInv();
+    if(inv){inv.agentDebate=null;inv.patentClaims=null;inv.competitorAnalysis=null;inv.pitchDeck=null;saveInventions();}
+    document.getElementById('agentsContent').innerHTML='<div class="bp-empty">🤖 COUNCIL NOT YET CONVENED<br><br>Click CONVENE COUNCIL to start a debate.</div>';
+  });
+}
+
+
 const IPI_CODE = `"""
 INTENTION PREDICTION INTERFACE — Consolidated edition
 Original: 13 files, ~167KB. This file: all features, ~70% smaller.
